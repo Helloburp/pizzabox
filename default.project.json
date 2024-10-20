@@ -1,0 +1,12 @@
+{
+  "name": "pizzabox",
+  "tree": {
+    "$className": "Folder",
+    "Plugin": {
+      "$path": "src"
+    },
+    "Packages": {
+      "$path": "Packages"
+    }
+  }
+}
