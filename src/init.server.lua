@@ -15,7 +15,7 @@ local state: T.State = {
 }
 
 local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-local toolbar = plugin:CreateToolbar(`PizzaBox v{C.VERSION}`)
+local toolbar = plugin:CreateToolbar(`PizzaBox {C.VERSION}`)
 local button = toolbar:CreateButton(
     C.MAIN_BUTTON_ID, "Toggles the PizzaBox menu.",
     C.ICONS.Closed, "PizzaBox"

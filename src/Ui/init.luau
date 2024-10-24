@@ -28,7 +28,7 @@ function _windowContents(state: T.State)
         Iris.Group()
         do
             Iris.Text{
-                `Welcome to PizzaBox!\nv{C.VERSION}`,
+                `Welcome to PizzaBox!\n{C.VERSION}`,
                 true
             }
         end
