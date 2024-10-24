@@ -33,8 +33,8 @@ jobs:
         with:
           version: 'v0.3.0'
       
-      - name: "Build Plugin"
-        run: rojo build plugin --output PizzaBox.rbxm
+      - name: "Build Rbxm"
+        run: rojo build --output PizzaBox.rbxm
 
       - name: Upload Plugin to Release
         env:
