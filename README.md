@@ -8,7 +8,7 @@ A collection of TPRR utilities.
 ## Building from source
 
 ```bash
-rojo build --plugin "pizzabox.rbxlx"
+rojo build --plugin "pizzabox.rbxm"
 ```
 
 Next, open `pizzabox.rbxlx` in Roblox Studio and start the Rojo server:
