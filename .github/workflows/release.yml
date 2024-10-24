@@ -1,0 +1,49 @@
+name: "Release"
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create ${{ github.ref_name }} --draft --verify-tag --title ${{ github.ref_name }}
+
+  build:
+    needs: ["create-release"]
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      
+      - name: Apply Version Tag
+        run: printf "return \"${{ github.ref_name }}\"\n" > src/VERSION.luau
+      
+      - name: Setup Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+        with:
+          version: 'v0.3.0'
+      
+      - name: "Build Plugin"
+        run: rojo build plugin --output PizzaBox.rbxm
+
+      - name: Upload Plugin to Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ github.ref_name }} PizzaBox.rbxm
+
+      - name: Upload Plugin to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PizzaBox.rbxm
+          path: PizzaBox.rbxm
