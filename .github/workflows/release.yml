@@ -32,8 +32,14 @@ jobs:
         uses: ok-nick/setup-aftman@v0.4.2
         with:
           version: 'v0.3.0'
+
+      - name: Setup Wally
+        run: aftman add UpliftGames/wally@0.3.2
       
-      - name: "Build Rbxm"
+      - name: Install Dependencies
+        run: wally install
+      
+      - name: Build Rbxm
         run: rojo build --output PizzaBox.rbxm
 
       - name: Upload Plugin to Release
