@@ -1,9 +1,18 @@
 type IrisState<T> = any
 
+export type OcState = {
+    ImplementAsNew: IrisState<boolean>,
+    FazCoinCost: IrisState<number>,
+    ObjDataModuleName: IrisState<string>,
+    ShopDataModuleName: IrisState<string>,
+    LastImplementationError: string
+}
+
 export type State = {
+    Plugin: Plugin,
     PluginOpenState: IrisState<boolean>,
     
-    SubMenuStates: {
+    WindowStates: {
         Rig: IrisState<boolean>,
         OC: IrisState<boolean>,
     },
@@ -11,6 +20,9 @@ export type State = {
     Settings: {
         Theme: IrisState<string>
     },
+
+    OcState: OcState,
+
 
     LastRigActionError: string
 }

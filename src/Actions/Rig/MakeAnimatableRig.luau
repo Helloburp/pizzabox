@@ -10,22 +10,22 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 
 	local humanoidRootPartModel = model:FindFirstChild("HumanoidRootPart")
 	if not (humanoidRootPartModel and humanoidRootPartModel:IsA("Model")) then
-		return Result.FromE("The provided model is not a valid TPRR rig.")
+		return Result.Err("The provided model is not a valid TPRR rig.")
 	end
 	
 	if not (model:FindFirstChild("HumanoidRootPart") and humanoidRootPartModel.PrimaryPart) then
-		return Result.FromE("No root part.")
+		return Result.Err("No root part.")
 	end
 	
 	local function Recurse(parent)
 		for _, model in pairs(parent:GetChildren()) do
 			if model:IsA("Model") then
 				if not model.PrimaryPart then
-					return Result.FromE(
+					return Result.Err(
 						model.Name .. " has no primary part."
 					)
 				elseif utilities.JointPartIndex[model.PrimaryPart.Name] ~= model.Name then
-					return Result.FromE(
+					return Result.Err(
 						model.Name .. "\'s primary part is not named or set properly."
 					)
 				end
@@ -57,7 +57,7 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 
 	newModel:Destroy()
 	
-	return Result.FromT(baseCharacter)
+	return Result.Ok(baseCharacter)
 end
 
 

@@ -22,13 +22,17 @@ end
 
 
 local state: T.State = {
+    Plugin = plugin,
     PluginOpenState = Iris.State(false),
-    SubMenuStates = {
-        Rig = Iris.State(false)
+    WindowStates = {
+        Rig = Iris.State(false),
+        OC = Iris.State(false)
     },
     Settings = {
         Theme = Iris.State(_getThemeId())
     },
+
+    OcState = require(script.Ui.OC).State(),
 
     LastRigActionError = ""
 }

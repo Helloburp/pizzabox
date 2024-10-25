@@ -4,6 +4,7 @@ export type Result<T,E> = {
     Unwrap: (Result<T,E>) -> (T?, E?),
     UnwrapOr: (Result<T,E>, _f: (E) -> ()) -> (T?),
     UnwrapOrDefault: (Result<T,E>, _f: (E) -> (T)) -> (T),
+    Expect: (Result<T,E>, err: string?) -> (T)
 }
 
 local m = {}
@@ -24,8 +25,26 @@ function m.UnwrapOrDefault<T,E>(self: Result<T,E>, _f: (E) -> (T)):  T
     return if self.Value._t then self.Value.v else _f(self.Value.v)
 end
 
-function m.FromT<T,E>(v: T): Result<T,E> return _new(true, v) end
-function m.FromE<T,E>(v: E): Result<T,E> return _new(false, v) end
+function m.Expect<T,E>(self: Result<T,E>, err: string?)
+    return self:UnwrapOr(function()
+        error(err or "Exception occured!")
+    end)
+end
+
+function m.Ok<T,E>(v: T): Result<T,E> return _new(true, v) end
+function m.Err<T,E>(v: E): Result<T,E> return _new(false, v) end
+
+--[[
+    Performs a Pcall as a Result.
+
+    T: If the function returns nil, it is set to 'true'.
+        If the function does not return nil,
+            it is the returned value.
+]]
+function m.Pcall<T>(...): Result<T,string>
+    local s, e = pcall(...)
+    return _new(s, s and (if e ~= nil then e else true) or e)
+end
 
 
 function _new<T,E>(state: boolean, v: T | E)

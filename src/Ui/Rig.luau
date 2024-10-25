@@ -17,13 +17,10 @@ function _selectionView(state: T.State)
 
     local textArgs = if selection and selection.Joints then {
             `Rig and Joints Selected: {selection.Rig.Name}, {selection.Joints.Name}`,
-            [Iris.Args.Text.Color] = Color3.new(0, 1 ,0.5)
         } elseif selection and not selection.Joints then {
             `Rig selected: {selection.Rig.Name}`,
-            [Iris.Args.Text.Color] = Color3.new(0, 1 ,0.5)
         } else {
-            err or "No rig selected.",
-            [Iris.Args.Text.Color] = Color3.new(1, 0.5 ,0.5)
+            err or "No model selected.",
         }
 
     Iris.Text(textArgs)
@@ -31,23 +28,25 @@ function _selectionView(state: T.State)
     local rig, joints =
         selection and selection.Rig,
         selection and selection.Joints
-
-    if rig and Iris.Button("Make Animatable Rig").clicked() then
-        ActionHandling.DoRecordedAction("Make Rig", function()
-            state.LastRigActionError = ""
-            local newModel = MakeAnimatableRig.MakeRig(rig):UnwrapOr(function(e)
-                state.LastRigActionError = e
+    if rig then
+        Iris.Separator()
+        if Iris.Button("Make Animatable Rig").clicked() then
+            ActionHandling.DoRecordedAction("Make Rig", function()
+                state.LastRigActionError = ""
+                local newModel = MakeAnimatableRig.MakeRig(rig):UnwrapOr(function(e)
+                    state.LastRigActionError = e
+                end)
+                Selection:Set(if newModel then {newModel} else {})
             end)
-            Selection:Set(if newModel then {newModel} else {})
-        end)
+        end
+        if state.LastRigActionError ~= "" then
+            Iris.Text{
+                `{state.LastRigActionError}`,
+                [Iris.Args.Text.Color] = Color3.new(1,0.5,0.5)
+            }
+        end
     end
 
-    if state.LastRigActionError ~= "" then
-        Iris.Text{
-            `{state.LastRigActionError}`,
-            [Iris.Args.Text.Color] = Color3.new(1,0.5,0.5)
-        }
-    end
 end
 
 
@@ -66,10 +65,10 @@ end
 
 
 function m.Cycle(state: T.State)
-    Iris.Window("Rig", {isOpened = state.SubMenuStates.Rig})
-    _utils()
-    Iris.Separator()
+    Iris.Window("Rig", {isOpened = state.WindowStates.Rig})
     _selectionView(state)
+    Iris.Separator()
+    _utils()
     Iris.End()
 end
 

@@ -3,6 +3,7 @@ local C = require(script.Parent["Ui.constants"])
 local T = require(script.Parent["Ui.types"])
 
 local Rig = require(script.Rig)
+local OC = require(script.OC)
 
 local m = {}
 
@@ -12,7 +13,10 @@ function _menubar(state: T.State)
     do
         Iris.Menu("View")
         Iris.MenuToggle(
-            "Rig Editor", {isChecked = state.SubMenuStates.Rig}
+            "Rigging", {isChecked = state.WindowStates.Rig}
+        )
+        Iris.MenuToggle(
+            "OC Parts", {isChecked = state.WindowStates.OC}
         )
         Iris.End()
     end
@@ -44,11 +48,10 @@ function _windowContents(state: T.State)
     Iris.End()
     Iris.Text("Your one-stop-shop for TPRR utilities.")
     Iris.Separator()
-    Iris.Text("What theme are we feeling today?")
     Iris.Table(2)
     do
         Iris.RadioButton(
-            {"Faz-Coin Orange", "DEFAULT"}, {index = state.Settings.Theme}
+            {"Floor-Poop Brown", "DEFAULT"}, {index = state.Settings.Theme}
         )
         Iris.NextColumn()
         Iris.RadioButton(
@@ -69,6 +72,7 @@ end
 
 function _submenus(state: T.State)
     Rig.Cycle(state)
+    OC.Cycle(state)
 end
 
 function m.FromState(

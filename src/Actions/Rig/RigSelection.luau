@@ -13,7 +13,7 @@ function m.Parse(): Result.Result<RigSelection, string>
 	local selections = Selection:Get()
 	
 	if #selections < 1 then
-		return Result.FromE("Not enough selections.")
+		return Result.Err("Not enough selections.")
 	end
 	
 	local selA = selections[1]
@@ -29,10 +29,10 @@ function m.Parse(): Result.Result<RigSelection, string>
 	end
 
     if not (modelList and modelList:IsA("Model")) then
-        return Result.FromE("The selected object is not a rig.")
+        return Result.Err("The selected object is not a rig.")
     end
 
-    return Result.FromT{
+    return Result.Ok{
         Rig = modelList,
         Joints = jointList
     }
