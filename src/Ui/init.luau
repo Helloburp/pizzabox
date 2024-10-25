@@ -10,10 +10,9 @@ local m = {}
 function _menubar(state: T.State)
     Iris.MenuBar()
     do
-        Iris.Menu("Rig")
-        Iris.MenuItem("New Rig")
+        Iris.Menu("View")
         Iris.MenuToggle(
-            "View Rig Editor", {isChecked = state.SubMenuStates.Rig}
+            "Rig Editor", {isChecked = state.SubMenuStates.Rig}
         )
         Iris.End()
     end
@@ -45,6 +44,26 @@ function _windowContents(state: T.State)
     Iris.End()
     Iris.Text("Your one-stop-shop for TPRR utilities.")
     Iris.Separator()
+    Iris.Text("What theme are we feeling today?")
+    Iris.Table(2)
+    do
+        Iris.RadioButton(
+            {"Faz-Coin Orange", "DEFAULT"}, {index = state.Settings.Theme}
+        )
+        Iris.NextColumn()
+        Iris.RadioButton(
+            {"Afton Alder", "PURPLE"}, {index = state.Settings.Theme}
+        )
+        Iris.NextColumn()
+        Iris.RadioButton(
+            {"Rockin' Red", "RED"}, {index = state.Settings.Theme}
+        )
+        Iris.NextColumn()
+        Iris.RadioButton(
+            {"Old but Gold", "GOLD"}, {index = state.Settings.Theme}
+        )
+    end
+    Iris.End()
 end
 
 

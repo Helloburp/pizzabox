@@ -5,9 +5,14 @@ export type State = {
     
     SubMenuStates: {
         Rig: IrisState<boolean>,
+        OC: IrisState<boolean>,
     },
 
-    LastRigActionError: IrisState<string>
+    Settings: {
+        Theme: IrisState<string>
+    },
+
+    LastRigActionError: string
 }
 
 return {}

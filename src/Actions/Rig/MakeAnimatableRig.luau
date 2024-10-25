@@ -3,7 +3,7 @@ local m = {}
 
 local utilities = require(script.Parent.MorphUtils)
 local morph = require(script.Parent.OldTprrMorph)
-local Result = require(script.Parent.Parent.Result)
+local Result = require(script.Parent.Parent.Parent.Result)
 
 
 function m.MakeRig(model: Model): Result.Result<Model, string>

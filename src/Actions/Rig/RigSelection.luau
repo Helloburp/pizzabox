@@ -1,5 +1,5 @@
 local Selection = game:GetService("Selection")
-local Result = require(script.Parent.Parent.Result)
+local Result = require(script.Parent.Parent.Parent.Result)
 
 
 export type RigSelection = {

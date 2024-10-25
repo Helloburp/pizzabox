@@ -1,4 +1,4 @@
-local Result = require(script.Parent.Parent.Result)
+local Result = require(script.Parent.Parent.Parent.Result)
 local m = {}
 
 

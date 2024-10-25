@@ -2,33 +2,14 @@ local Iris = require(script.Parent.Parent.Parent.Packages.Iris)
 local T = require(script.Parent.Parent["Ui.types"])
 local m = {}
 
-local inst_actions = script.Parent.Parent.Actions
-local RigSelection = require(inst_actions.RigSelection)
-local MakeAnimatableRig = require(inst_actions.MakeAnimatableRig)
-local MakeTprrRig = require(inst_actions.MakeTprrRig)
+local inst_rig_actions = script.Parent.Parent.Actions.Rig
+local RigSelection = require(inst_rig_actions.RigSelection)
+local MakeAnimatableRig = require(inst_rig_actions.MakeAnimatableRig)
+local NewStandardRig = require(inst_rig_actions.NewStandardRig)
 local Selection = game:GetService("Selection")
 
-local ChangeHistoryService = game:GetService("ChangeHistoryService")
+local ActionHandling = require(script.Parent.ActionHandling)
 
-
-function _doRecordedAction(name: string, _f: () -> ())
-    local isRecording = ChangeHistoryService:TryBeginRecording(name)
-    assert(
-        isRecording,
-        [[PLUGIN ERROR: Attempted to start a recording before \
-            another one was finished.]]
-    )
-    local s, e = pcall(_f)
-    ChangeHistoryService:FinishRecording(
-        isRecording,
-        if s then Enum.FinishRecordingOperation.Commit
-            else Enum.FinishRecordingOperation.Cancel
-    )
-
-    if not s then
-        warn(`Plugin action '{name}' had an error during execution:\n{e}`)
-    end
-end
 
 
 function _selectionView(state: T.State)
@@ -52,7 +33,7 @@ function _selectionView(state: T.State)
         selection and selection.Joints
 
     if rig and Iris.Button("Make Animatable Rig").clicked() then
-        _doRecordedAction("Make Rig", function()
+        ActionHandling.DoRecordedAction("Make Rig", function()
             state.LastRigActionError = ""
             local newModel = MakeAnimatableRig.MakeRig(rig):UnwrapOr(function(e)
                 state.LastRigActionError = e
@@ -70,8 +51,24 @@ function _selectionView(state: T.State)
 end
 
 
+function _utils()
+    if Iris.Button("New Standard Rig").clicked() then
+        ActionHandling.DoRecordedAction("New Standard Rig", function()
+            local frontCf = game.Workspace.CurrentCamera.CFrame
+                * CFrame.new(0, 0, -10)
+            local rig = NewStandardRig.New(
+                CFrame.new(frontCf.X, frontCf.Y, frontCf.Z)
+            )
+            Selection:set({rig})
+        end)
+    end
+end
+
+
 function m.Cycle(state: T.State)
     Iris.Window("Rig", {isOpened = state.SubMenuStates.Rig})
+    _utils()
+    Iris.Separator()
     _selectionView(state)
     Iris.End()
 end

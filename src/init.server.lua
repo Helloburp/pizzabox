@@ -6,11 +6,30 @@ local Ui = require(script.Ui)
 local C = require(script["Ui.constants"])
 local T = require(script["Ui.types"])
 
+
+function _getThemeId(): string
+    local retrieved = plugin:GetSetting(C.SETTING_KEYS.THEME)
+    if retrieved and C.IRIS_CONFIGS[retrieved] then
+        return retrieved
+    else
+        return "DEFAULT"
+    end
+end
+
+function _setThemeId(str: string)
+    plugin:SetSetting(C.SETTING_KEYS.THEME, str)
+end
+
+
 local state: T.State = {
     PluginOpenState = Iris.State(false),
     SubMenuStates = {
         Rig = Iris.State(false)
     },
+    Settings = {
+        Theme = Iris.State(_getThemeId())
+    },
+
     LastRigActionError = ""
 }
 
@@ -33,6 +52,12 @@ function _setActive(state: boolean)
 end
 
 
+function _updateTheme()
+    _setThemeId(state.Settings.Theme:get())
+    Iris.UpdateGlobalConfig(C.IRIS_CONFIGS[state.Settings.Theme:get()])
+end
+
+
 button.Click:Connect(function()
     state.PluginOpenState:set(not state.PluginOpenState:get())
     _setActive(state.PluginOpenState:get())
@@ -46,6 +71,8 @@ plugin.Unloading:Connect(function()
 end)
 
 Iris.Init(screenGui)
-Iris.UpdateGlobalConfig(C.IRIS_CONFIGS.RED_CONFIG)
+_updateTheme()
+
+state.Settings.Theme:onChange(_updateTheme)
 
 Iris:Connect(Ui.FromState(state, function() _setActive(false) end))
