@@ -10,6 +10,11 @@ export type OcState = {
     UsingRecommendationPresetName: IrisState<boolean>
 }
 
+export type RigState = {
+    LastRigActionError: string,
+    LiveEditingRig: Model?
+}
+
 export type State = {
     Plugin: Plugin,
     PluginOpenState: IrisState<boolean>,
@@ -24,9 +29,7 @@ export type State = {
     },
 
     OcState: OcState,
-
-
-    LastRigActionError: string
+    RigState: RigState,
 }
 
 return {}

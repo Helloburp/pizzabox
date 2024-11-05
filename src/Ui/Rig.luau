@@ -7,9 +7,9 @@ local RigSelection = require(inst_rig_actions.RigSelection)
 local MakeAnimatableRig = require(inst_rig_actions.MakeAnimatableRig)
 local NewStandardRig = require(inst_rig_actions.NewStandardRig)
 local Selection = game:GetService("Selection")
+local Attachments = require(inst_rig_actions.Attachments)
 
 local ActionHandling = require(script.Parent.ActionHandling)
-
 
 
 function _selectionView(state: T.State)
@@ -25,23 +25,39 @@ function _selectionView(state: T.State)
 
     Iris.Text(textArgs)
 
-    local rig, joints =
+    local rig, _joints =
         selection and selection.Rig,
         selection and selection.Joints
     if rig then
         Iris.Separator()
         if Iris.Button("Make Animatable Rig").clicked() then
             ActionHandling.DoRecordedAction("Make Rig", function()
-                state.LastRigActionError = ""
+                state.RigState.LastRigActionError = ""
                 local newModel = MakeAnimatableRig.MakeRig(rig):UnwrapOr(function(e)
-                    state.LastRigActionError = e
+                    state.RigState.LastRigActionError = e
                 end)
                 Selection:Set(if newModel then {newModel} else {})
             end)
         end
-        if state.LastRigActionError ~= "" then
+
+        Iris.Separator()
+        Iris.Text("Mesh Deformation & Beams")
+        Iris.SameLine()
+        do
+            if Iris.Button("Enter Live Update Mode").clicked() then
+                state.RigState.LiveEditingRig = rig
+            end
+            if Iris.Button("Update Once").clicked() then
+                ActionHandling.DoRecordedAction("Update Rig Attachments", function()
+                    Attachments.UpdateRigAttachments(rig)
+                end)
+            end
+        end
+        Iris.End()
+
+        if state.RigState.LastRigActionError ~= "" then
             Iris.Text{
-                `{state.LastRigActionError}`,
+                `{state.RigState.LastRigActionError}`,
                 [Iris.Args.Text.Color] = Color3.new(1,0.5,0.5)
             }
         end
@@ -66,10 +82,27 @@ end
 
 function m.Cycle(state: T.State)
     Iris.Window("Rig", {isOpened = state.WindowStates.Rig})
-    _selectionView(state)
-    Iris.Separator()
-    _utils()
+    if not state.RigState.LiveEditingRig then
+        _selectionView(state)
+        Iris.Separator()
+        _utils()
+    else
+        Attachments.UpdateRigAttachments(state.RigState.LiveEditingRig)
+        if Iris.Button("Exit Live View").clicked() or not game.Workspace:IsAncestorOf(
+            state.RigState.LiveEditingRig
+        ) then
+            state.RigState.LiveEditingRig = nil
+        end
+    end
     Iris.End()
+end
+
+
+function m.State(): T.RigState
+    return {
+        LastRigActionError = "",
+        LiveEditingRig = nil
+    }
 end
 
 

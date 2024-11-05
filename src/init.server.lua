@@ -33,8 +33,7 @@ local state: T.State = {
     },
 
     OcState = require(script.Ui.OC).State(),
-
-    LastRigActionError = ""
+    RigState = require(script.Ui.Rig).State()
 }
 
 local screenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
