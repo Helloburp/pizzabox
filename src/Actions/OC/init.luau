@@ -202,7 +202,7 @@ function _getSourceAfterAddOcPartToObjData(
     objDataSource: string, name: string, presetName: string?
 ): string
     local str = if presetName
-        then `_new({string.format("%-50s, %s", `"name"`, `"presetName"`)})`
+        then `_new({string.format("%-50s %s", `"{name}",`, `"{presetName}"`)})`
         else `_new("{name}")`
     
     return string.gsub(objDataSource, "(%b{})", function(listSrc: string)

@@ -262,7 +262,7 @@ function m.ParseRecommendationPresetNames(
     local s, r = pcall(function()
         for name in string.gmatch(
             recommendationModule.Source,
-            "(%a-)%w-=%w-require") do
+            "(%a-)%s-=%s-require") do
             table.insert(names, name)
         end
     end)

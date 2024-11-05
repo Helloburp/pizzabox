@@ -29,7 +29,10 @@ function _implementOcPart(
                 ImplementAsNew = state.OcState.ImplementAsNew:get(),
                 ObjectDataModuleName = state.OcState.ObjDataModuleName:get(),
                 ShopDataModuleName = state.OcState.ShopDataModuleName:get(),
-                Categories = categories
+                Categories = categories,
+                RecommendationPresetName = if state.OcState.UsingRecommendationPresetName:get()
+                    then state.OcState.RecommendationPresetName:get()
+                    else nil
             }
         )
 
@@ -100,7 +103,8 @@ end
 function _implementationMenu(
     state: T.State,
     parsedDataModel: T_OC.ParsedDataModel,
-    part: T_OC.ParsedOCPart
+    part: T_OC.ParsedOCPart,
+    recommendationNames: {string}
 )
     Iris.InputNum({"Cost"}, {number = state.OcState.FazCoinCost})
     _comboFromList(
@@ -113,6 +117,16 @@ function _implementationMenu(
         C_OC.ALL_SHOP_TYPES,
         state.OcState.ShopDataModuleName
     )
+    if Iris.Checkbox(
+        {"Use Recommended Parts Preset"},
+        {isChecked = state.OcState.UsingRecommendationPresetName}
+    ).isChecked:get() then
+        _comboFromList(
+            "Recommended Parts Preset",
+            recommendationNames,
+            state.OcState.RecommendationPresetName
+        )
+    end
     Iris.Checkbox({"Tag as New"}, {isChecked = state.OcState.ImplementAsNew})
 
     Iris.Tree("Extra Categories")
@@ -140,10 +154,25 @@ end
 function _partSelectedActions(state: T.State, part: T_OC.ParsedOCPart)
     local parsedDataModel, err = Parse.ParseDataModel():Unwrap()
     if parsedDataModel then
-        Iris.Tree("Implementation", {isUncollapsed = true})
-        _implementationMenu(state, parsedDataModel, part)
-        Iris.End()
-    else
+        local recommendationNames = Parse.ParseRecommendationPresetNames(parsedDataModel):UnwrapOr(
+            function(myErr) err = myErr end
+        )
+
+        if recommendationNames then
+            if #recommendationNames <= 0 then
+                err = "There are no recommendation names."
+            else
+                if state.OcState.RecommendationPresetName:get() == "UNDEFINED" then
+                    state.OcState.RecommendationPresetName:set(recommendationNames[1])
+                end
+                Iris.Tree("Implementation", {isUncollapsed = true})
+                _implementationMenu(state, parsedDataModel, part, recommendationNames)
+                Iris.End()
+            end
+        end
+    end
+
+    if err then
         Iris.Text(`Implementation is not available.\n({err})`)
     end
 
@@ -204,7 +233,9 @@ function m.State(): T.OcState
         FazCoinCost = Iris.State(0),
         ShopDataModuleName = Iris.State(C_OC.ALL_MODEL_TYPES[1]),
         ImplementAsNew = Iris.State(true),
-        LastImplementationError = ""
+        LastImplementationError = "",
+        RecommendationPresetName = Iris.State("UNDEFINED"),
+        UsingRecommendationPresetName = Iris.State(true)
     }
 end
 

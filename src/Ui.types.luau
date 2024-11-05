@@ -5,7 +5,9 @@ export type OcState = {
     FazCoinCost: IrisState<number>,
     ObjDataModuleName: IrisState<string>,
     ShopDataModuleName: IrisState<string>,
-    LastImplementationError: string
+    RecommendationPresetName: IrisState<string>,
+    LastImplementationError: string,
+    UsingRecommendationPresetName: IrisState<boolean>
 }
 
 export type State = {
