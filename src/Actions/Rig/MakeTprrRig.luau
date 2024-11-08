@@ -11,7 +11,7 @@ function m.MakeRig(modelParent, jointParent): Result.Result<any, string>
 	success, err = utilities:TestPartListIntegrity(jointParent)
 	
 	if not success then
-		return Result.FromE(err)
+		return Result.Err(err)
 	end
 	
 	local modelIndex = {}
@@ -43,7 +43,7 @@ function m.MakeRig(modelParent, jointParent): Result.Result<any, string>
 	
 	jointParent.Parent = nil
 	
-	return Result.FromT(true)
+	return Result.Ok(true)
 end
 
 
