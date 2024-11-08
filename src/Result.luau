@@ -4,35 +4,16 @@ export type Result<T,E> = {
     Unwrap: (Result<T,E>) -> (T?, E?),
     UnwrapOr: (Result<T,E>, _f: (E) -> ()) -> (T?),
     UnwrapOrDefault: (Result<T,E>, _f: (E) -> (T)) -> (T),
-    Expect: (Result<T,E>, err: string?) -> (T)
+    Expect: (Result<T,E>, err: string?) -> (T),
+    Ok: (Result<T,E>) -> T?,
+    Err: (Result<T,E>) -> E?,
 }
 
 local m = {}
 
-function m.Unwrap<T,E>(self: Result<T,E>): (T?, E?)
-    return
-        (if self.Value._t then self.Value.v else nil),
-        (if not self.Value._t then self.Value.v else nil)
-end
-
-function m.UnwrapOr<T,E>(self: Result<T,E>, _f: (E) -> ()): (T?)
-    if self.Value._t then return self.Value.v end
-    _f(self.Value.v)
-    return nil
-end
-
-function m.UnwrapOrDefault<T,E>(self: Result<T,E>, _f: (E) -> (T)):  T
-    return if self.Value._t then self.Value.v else _f(self.Value.v)
-end
-
-function m.Expect<T,E>(self: Result<T,E>, err: string?)
-    return self:UnwrapOr(function()
-        error(err or "Exception occured!")
-    end)
-end
-
 function m.Ok<T,E>(v: T): Result<T,E> return _new(true, v) end
 function m.Err<T,E>(v: E): Result<T,E> return _new(false, v) end
+
 
 --[[
     Performs a Pcall as a Result.
@@ -47,12 +28,50 @@ function m.Pcall<T>(...): Result<T,string>
 end
 
 
+local Result = {}
+
+function Result.Unwrap<T,E>(self: Result<T,E>): (T?, E?)
+    return
+        (if self.Value._t then self.Value.v else nil),
+        (if not self.Value._t then self.Value.v else nil)
+end
+
+function Result.UnwrapOr<T,E>(self: Result<T,E>, _f: (E) -> ()): (T?)
+    if self.Value._t then return self.Value.v end
+    _f(self.Value.v)
+    return nil
+end
+
+function Result.UnwrapOrDefault<T,E>(self: Result<T,E>, _f: (E) -> (T)):  T
+    return if self.Value._t then self.Value.v else _f(self.Value.v)
+end
+
+function Result.Expect<T,E>(self: Result<T,E>, err: string?)
+    return self:UnwrapOr(function()
+        error(err or "Exception occured!")
+    end)
+end
+
+function Result.Ok<T,E>(self: Result<T,E>): T?
+    local t = self:Unwrap()
+    return t
+end
+
+
+function Result.Err<T,E>(self: Result<T,E>): E?
+    local e = select(2, self:Unwrap())
+    return e
+end
+
+
 function _new<T,E>(state: boolean, v: T | E)
     local r = setmetatable(
         {Value = {_t = state, v = v} },
-        {__index = m}
+        {__index = Result}
     )
     return r
 end
+
+
 
 return m
