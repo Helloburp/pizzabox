@@ -7,7 +7,7 @@ local RigSelection = require(inst_rig_actions.RigSelection)
 local MakeAnimatableRig = require(inst_rig_actions.MakeAnimatableRig)
 local NewStandardRig = require(inst_rig_actions.NewStandardRig)
 local Selection = game:GetService("Selection")
-local Attachments = require(inst_rig_actions.Attachments)
+local LinkedComponent = require(inst_rig_actions.LinkedComponent)
 
 local ActionHandling = require(script.Parent.ActionHandling)
 
@@ -49,7 +49,7 @@ function _selectionView(state: T.State)
             end
             if Iris.Button("Update Once").clicked() then
                 ActionHandling.DoRecordedAction("Update Rig Attachments", function()
-                    Attachments.UpdateRigAttachments(rig)
+                    LinkedComponent.UpdateRigAttachments(rig)
                 end)
             end
         end
@@ -87,7 +87,7 @@ function m.Cycle(state: T.State)
         Iris.Separator()
         _utils()
     else
-        Attachments.UpdateRigAttachments(state.RigState.LiveEditingRig)
+        LinkedComponent.UpdateRigAttachments(state.RigState.LiveEditingRig)
         if Iris.Button("Exit Live View").clicked() or not game.Workspace:IsAncestorOf(
             state.RigState.LiveEditingRig
         ) then

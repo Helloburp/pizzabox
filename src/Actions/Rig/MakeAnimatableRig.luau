@@ -37,10 +37,15 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 	Recurse(model)
 	
 	local baseCharacter = script.Parent.OldTprrMorph.PlayerRigData.Dummy:Clone()
+	local hum = baseCharacter:FindFirstChildOfClass("Humanoid")
+	local animator = hum and hum:FindFirstChildWhichIsA("Animator")
+	if hum and not animator then
+		Instance.new("Animator", hum)
+	end
 
 	local newModel = model:Clone()
 	newModel.Parent = model.Parent
-	newModel:PivotTo(newModel:GetPivot() * CFrame.new(0, 5, 0))
+	newModel:PivotTo(newModel:GetPivot())
 	
 	baseCharacter.Parent = newModel.Parent
 	baseCharacter:SetPrimaryPartCFrame(

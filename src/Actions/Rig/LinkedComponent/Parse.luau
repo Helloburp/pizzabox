@@ -1,16 +1,23 @@
-local T = require(script.Parent["Parse.types"])
+local Result = require(script.Parent.Parent.Parent.Parent.Result)
+type Result<T,E> = Result.Result<T,E>
+
+
+local T = require(script.Parent.types)
 type ActiveBone = T.ActiveBone
 type BoneDefinition = T.BoneDefinition
 type ActiveBeam = T.ActiveBeam
 type BeamDefinition = T.BeamDefinition
 type ActiveRiggedModel = T.ActiveRiggedModel
+type TargetDefinition = T.TargetDefinition
+type ActiveLink<I,T> = T.ActiveLink<I,T>
+
 
 
 local m = {}
 
 
 function m.ParseValueAsInstanceType(
-	targetValue: StringValue | ObjectValue,
+	targetValue: TargetDefinition,
 	rootModel: Model,
 	instanceType: string
 ): Instance?
@@ -22,7 +29,7 @@ function m.ParseValueAsInstanceType(
 end
 
 
-function m.ParseTarget(root: Instance): (StringValue | ObjectValue)?
+function m.ParseTarget(root: Instance): (TargetDefinition)?
 	local target = root:FindFirstChild("Target")
 	return (target and (target:IsA("ObjectValue") or target:IsA("StringValue")))
         and target
@@ -34,7 +41,7 @@ function m.ParseActiveBone(self: BoneDefinition): ActiveBone?
 	local target = m.ParseValueAsInstanceType(self.Target, self.RootModel, "PVInstance")
 	local children = {}
 
-	for _, child in pairs(self.Bone:GetChildren()) do
+	for _, child in pairs(self.Component:GetChildren()) do
 		if not child:IsA("Bone") then continue end
 
 		local childBoneDefinition = m.ParseBoneDefinition(child, self.RootModel)
@@ -46,13 +53,15 @@ function m.ParseActiveBone(self: BoneDefinition): ActiveBone?
 		table.insert(children, childActiveBone)
 	end
 
-	return if target then {Bone = self.Bone, Target = target, Children = children} else nil
+	return if target then
+			{Component = self.Component, Target = target, Children = children}
+			else nil
 end
 
 
 function m.ParseActiveBeam(self: BeamDefinition): ActiveBeam?
 	local target = m.ParseValueAsInstanceType(self.Target, self.RootModel, "Attachment")
-	return if target then {Beam = self.Beam, Target = target} else nil
+	return if target then {Component = self.Component, Target = target} else nil
 end
 
 
@@ -61,7 +70,7 @@ function m.ParseBoneDefinition(bone: Bone, rootModel: Model): BoneDefinition?
     if not target then return end
 
 	return {
-		Bone = bone,
+		Component = bone,
 		Target = target,
 		RootModel = rootModel
 	}
@@ -73,7 +82,7 @@ function m.ParseBeamDefinition(beam: Beam, rootModel: Model): BeamDefinition?
     if not target then return end
 
     return {
-        Beam = beam,
+        Component = beam,
         Target = target,
         RootModel = rootModel
     }
@@ -83,7 +92,6 @@ end
 function m.ParseActiveRiggedModel(model: Model, rootModel: Model): ActiveRiggedModel
 	local activeRiggedModel = {
 		Model = model,
-		RootModel = rootModel,
 		Beams = {},
 		AncestorBones = {}
 	}
@@ -111,6 +119,18 @@ function m.ParseActiveRiggedModel(model: Model, rootModel: Model): ActiveRiggedM
 	_recurse(model)
 
 	return activeRiggedModel
+end
+
+
+function m.EvaluateActiveLink(
+	link: ActiveLink<Instance,Instance>,
+	rootModel: Model
+): Result<boolean, string>
+	if not link.Target:IsDescendantOf(rootModel) then
+		return Result.Err(`Target "{link.Target.Name}" is not a descendant of the rig.`)
+	end
+
+	return Result.Ok(true)
 end
 
 
