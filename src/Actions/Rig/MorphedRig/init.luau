@@ -6,12 +6,23 @@ type MorphedRig = T.MorphedRig
 
 local LinkedComponent = require(script.Parent.LinkedComponent)
 local MakeAnimatableRig = require(script.Parent.MakeAnimatableRig)
+local Parse = require(script.Parse)
 
 local m = {}
 
 
-function m.NewAnimationRig(rig: Model): Result<Model,string>
-    return MakeAnimatableRig.MakeRig(rig)
+function m.NewAnimationRig(rig: Model): Result<MorphedRig,string>
+    local result = MakeAnimatableRig.MakeRig(rig)
+    local model = result:Ok()
+    if model then
+        model:PivotTo(rig:GetPivot())
+        model.Parent = rig.Parent
+    end
+
+    local morphedRig = Parse.ParseMorphedRig(model)
+        :Expect("Failed to parse default animatable rig.")
+    
+    return Result.Ok(morphedRig)
 end
 
 

@@ -44,8 +44,6 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 	end
 
 	local newModel = model:Clone()
-	newModel.Parent = model.Parent
-	newModel:PivotTo(newModel:GetPivot())
 	
 	baseCharacter.Parent = newModel.Parent
 	baseCharacter:SetPrimaryPartCFrame(

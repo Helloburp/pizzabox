@@ -67,6 +67,7 @@ function m.NewSkeletonVisualization(
 
     for _, child in pairs(ancestor.Children) do
         local p = _generateSkeletonPiece(ancestor.Joint, child.Joint, crossSectionSize)
+        p.Locked = true
         p.Parent = model
 
         table.insert(parts, p)

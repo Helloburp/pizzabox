@@ -1,5 +1,14 @@
 type IrisState<T> = any
 
+export type TaggedText = { Id: string, Text: string }
+
+
+export type ActionOutput = {
+    Errors: { TaggedText },
+    Warnings: { TaggedText },
+    Notices: { TaggedText }
+}
+
 export type OcState = {
     ImplementAsNew: IrisState<boolean>,
     FazCoinCost: IrisState<number>,
@@ -10,9 +19,47 @@ export type OcState = {
     UsingRecommendationPresetName: IrisState<boolean>
 }
 
+
+export type RigUiMode = {
+    _t: "Static",
+    SelectedComponent: {
+        _t: "Bone",
+        Component: Bone
+    } | {
+        _t: "Beam",
+        Component: Beam
+    }?,
+    Output: ActionOutput
+} | {
+    _t: "Animated",
+    AnimationRigRootModel: Model
+}
+
+
+export type RigUiEditingState = {
+    _t: "NotEditing",
+    Output: ActionOutput
+} | {
+    _t: "RigEditing",
+    RootModel: Model,
+    Mode: RigUiMode
+} 
+
+
+export type RigUiTransition = {
+    _t: "Mode",
+    Value: RigUiMode,
+} | {
+    _t: "EditingState",
+    Value: RigUiEditingState
+}
+
+
 export type RigState = {
-    LastRigActionError: string,
-    LiveEditingRig: Model?
+    RigVisualizerState: IrisState<boolean>,
+    LiveLinkedComponentUpdatesState: IrisState<boolean>,
+    AnimationPlayingState: IrisState<boolean>,
+    UiState: RigUiEditingState
 }
 
 export type State = {

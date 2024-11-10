@@ -42,5 +42,10 @@ return {
     },
     SETTING_KEYS = {
         THEME = "PIZZABOX_THEME"
+    },
+    COLORS = {
+        ERROR = Color3.new(1, 0.5, 0.5),
+        WARNING = Color3.new(1, 0.8, 0.5),
+        NOTICE = Color3.new(0.7, 0.7, 1)
     }
 }
