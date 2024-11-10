@@ -5,8 +5,6 @@ local T = require(script.types)
 type MorphedRig = T.MorphedRig
 
 local LinkedComponent = require(script.Parent.LinkedComponent)
-
-
 local MakeAnimatableRig = require(script.Parent.MakeAnimatableRig)
 
 local m = {}
@@ -35,6 +33,27 @@ end
 function m.StepAnimation(morphedRig: MorphedRig, deltaTime: number)
     morphedRig.Animator:StepAnimations(deltaTime)
     LinkedComponent.UpdateRigAttachments(morphedRig.Rig.Root.Model)
+end
+
+
+function m.StopAnimations(morphedRig: MorphedRig)
+    for _, animation in pairs(morphedRig.Animator:GetPlayingAnimationTracks()) do
+        animation:Stop()
+    end
+end
+
+
+function m.LoadId(
+    morphedRig: MorphedRig,
+    id: string
+): AnimationTrack
+    local animation = Instance.new("Animation")
+    animation.AnimationId = id
+
+    local track = morphedRig.Animator:LoadAnimation(animation)
+    animation:Destroy()
+
+    return track
 end
 
 
