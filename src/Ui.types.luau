@@ -1,3 +1,7 @@
+local T_RIGMODEL = require(script.Parent.Actions.Rig.RigModel.types)
+type RigModel = T_RIGMODEL.RigModel
+
+
 type IrisState<T> = any
 
 export type TaggedText = { Id: string, Text: string }
@@ -20,19 +24,28 @@ export type OcState = {
 }
 
 
+export type RigUiSelectedComponent = {
+    _t: "Bone",
+    Component: Bone
+} | {
+    _t: "Beam",
+    Component: Beam
+} | {
+    _t: "RigModel",
+    RigModel: RigModel
+} | {
+    _t: "Joint",
+    RigModel: RigModel
+}
+
 export type RigUiMode = {
     _t: "Static",
-    SelectedComponent: {
-        _t: "Bone",
-        Component: Bone
-    } | {
-        _t: "Beam",
-        Component: Beam
-    }?,
+    SelectedComponent: RigUiSelectedComponent?,
     Output: ActionOutput
 } | {
     _t: "Animated",
-    AnimationRigRootModel: Model
+    AnimationRigRootModel: Model,
+    Output: ActionOutput
 }
 
 
@@ -42,6 +55,7 @@ export type RigUiEditingState = {
 } | {
     _t: "RigEditing",
     RootModel: Model,
+    WorkingFolder: Folder,
     Mode: RigUiMode
 } 
 
@@ -56,6 +70,7 @@ export type RigUiTransition = {
 
 
 export type RigState = {
+    LastRigVisualizer: Instance?,
     RigVisualizerState: IrisState<boolean>,
     LiveLinkedComponentUpdatesState: IrisState<boolean>,
     AnimationPlayingState: IrisState<boolean>,

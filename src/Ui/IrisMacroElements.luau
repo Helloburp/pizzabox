@@ -11,4 +11,10 @@ function m.WrappedRichText(...)
 end
 
 
+function m.OutputText(text: string)
+    if text == "" then return end
+    m.WrappedRichText(text)
+end
+
+
 return m

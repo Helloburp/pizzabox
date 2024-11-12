@@ -7,14 +7,17 @@ type SkeletonVisualization = T.SkeletonVisualization
 
 local m = {}
 
-function m.Joint(name: string, cf: CFrame): BasePart
+function m.Joint(name: string, cf: CFrame, size: number): BasePart
     local p = Instance.new("Part")
     p.Name = name
     p.Anchored = true
     p.TopSurface = Enum.SurfaceType.Smooth
     p.BottomSurface = Enum.SurfaceType.Smooth
     p.BrickColor = BrickColor.new("Medium stone grey")
+    p.Material = Enum.Material.Neon
     p.CFrame = cf
+    p.Size = Vector3.new(size, size, size)
+    p.Transparency = 0.5
 
     return p
 end
@@ -24,10 +27,10 @@ function m.AddJointToModel(model: Model, joint: BasePart)
     model.PrimaryPart = joint
 end
 
-function m.NewRigModel(name: string, jointName: string, cf: CFrame): RigModel
+function m.NewRigModel(name: string, jointName: string, jointSize: number, cf: CFrame): RigModel
     local model = Instance.new("Model")
     model.Name = name
-    local joint = m.Joint(jointName, cf)
+    local joint = m.Joint(jointName, cf, jointSize)
     m.AddJointToModel(model, joint)
 
     return {
@@ -65,14 +68,19 @@ function m.NewSkeletonVisualization(
     local highlight = Instance.new("Highlight", model)
     local parts = {}
 
-    for _, child in pairs(ancestor.Children) do
-        local p = _generateSkeletonPiece(ancestor.Joint, child.Joint, crossSectionSize)
-        p.Locked = true
-        p.Parent = model
+    local function _recurse(parent: RigModel)
+        for _, child in pairs(parent.Children) do
+            local p = _generateSkeletonPiece(parent.Joint, child.Joint, crossSectionSize)
+            p.Locked = true
+            p.Parent = model
 
-        table.insert(parts, p)
-        m.NewSkeletonVisualization(child, crossSectionSize)
+            table.insert(parts, p)
+            _recurse(child)
+        end
     end
+
+    _recurse(ancestor)
+
 
     return {
         Parts = parts,

@@ -30,7 +30,7 @@ function m.NewBoneTarget(bone: Bone, rootModel: Model): Result<BoneDefinition,st
         return Result.Err("The bone must be inside the provided rig.")
     end
 
-    local target = RigModelInstantiate.Joint(name, bone.WorldCFrame)
+    local target = RigModelInstantiate.Joint(name, bone.WorldCFrame, 0.124)
     target.Parent = targetParent
 
     return Implement.ImplementBone(bone, target, rootModel)
@@ -46,8 +46,10 @@ function m.NewBeamTarget(beam: Beam, rootModel: Model)
     ) then
         return Result.Err("The beam must be inside the provided rig.")
     end
+    local joint = RigModelInstantiate.Joint(name, targetParent:GetPivot(), 0.124)
+    joint.Parent = targetParent
 
-    local target = Instance.new("Attachment", targetParent)
+    local target = Instance.new("Attachment", joint)
     target.Name = name
 
     return Implement.ImplementBeam(beam, target, rootModel)

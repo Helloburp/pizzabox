@@ -1,4 +1,3 @@
-local Iris = require(script.Parent.Parent.Parent.Packages.Iris)
 local T = require(script.Parent.Parent["Ui.types"])
 local C = require(script.Parent.Parent["Ui.constants"])
 type ActionOutput = T.ActionOutput
@@ -37,17 +36,18 @@ end
 function m.Format(self: ActionOutput): string
     local lines = {}
     for _, taggedText in pairs(self.Errors) do
-        table.insert(lines, `<font color="#{C.COLORS.ERROR:ToHex()}">🛑 {taggedText.Text}<font>`)
+        table.insert(lines, `<font color="#{C.COLORS.ERROR:ToHex()}">🛑 {taggedText.Text}</font>`)
     end
     for _, taggedText in pairs(self.Warnings) do
-        table.insert(lines, `<font color="#{C.COLORS.WARNING:ToHex()}">⚠️ {taggedText.Text}<font>`)
+        table.insert(lines, `<font color="#{C.COLORS.WARNING:ToHex()}">⚠️ {taggedText.Text}</font>`)
     end
     for _, taggedText in pairs(self.Notices) do
-        table.insert(lines, `<font color="#{C.COLORS.NOTICE:ToHex()}">ℹ️️ {taggedText.Text}<font>`)
+        table.insert(lines, `<font color="#{C.COLORS.NOTICE:ToHex()}">ℹ️️ {taggedText.Text}</font>`)
     end
 
     return table.concat(lines, "\n")
 end
+
 
 
 return m

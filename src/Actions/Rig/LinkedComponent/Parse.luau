@@ -24,7 +24,14 @@ function m.ParseValueAsInstanceType(
 	return if targetValue:IsA("ObjectValue") then
 			(targetValue.Value and targetValue.Value:IsA(instanceType)) and targetValue.Value or nil
 		elseif targetValue:IsA("StringValue") then
-			rootModel:FindFirstChild(targetValue.Value, true)
+			(function()
+				for _, descendant in pairs(rootModel:GetDescendants()) do
+					if not descendant:IsA(instanceType) then continue end
+					if descendant.Name ~= targetValue.Value then continue end
+					return descendant
+				end
+				return nil
+			end)()
 		else nil
 end
 

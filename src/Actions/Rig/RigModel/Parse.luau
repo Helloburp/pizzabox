@@ -19,7 +19,7 @@ function m.ParseRigModel(model: Model): Result<RigModel, string>
         or nil
     
     if not joint then
-        return Result.Err("Joint was not found, or is not a child of the model.")
+        return Result.Err(`PrimaryPart was not found, or is not a child of model '{model.Name}'.`)
     end
 
     local children: {RigModel} = {}
@@ -54,17 +54,17 @@ function m.EvaluateRigNames(rig: Rig): Result<RigNameEvaluation, string>
         jointNames[jointName] = model
 
         for _, child in pairs(model.Children) do
-            _recurse(child)
+            local result = _recurse(child)
+            if result:Err() then return result end
         end
 
         return Result.Ok(true)
     end
 
     local e = _recurse(rig.Root):Err()
-
-    return if e then e else Result.Ok{
+    return if e then Result.Err(e) else Result.Ok{
         RigModelsByModelName = modelNames,
-        RigModelByJointName = jointNames
+        RigModelsByJointName = jointNames
     }
 end
 
@@ -77,6 +77,30 @@ function m.RigFromRootRigModel(rootRigModel: RigModel): Rig
         ),
         Root = rootRigModel
     }
+end
+
+
+function m.ContainsModel(rootRigModel: RigModel, model: Model): RigModel?
+    if rootRigModel.Model == model then return rootRigModel end
+
+    for _, child in pairs(rootRigModel.Children) do
+        local containingChild = m.ContainsModel(child, model)
+        if containingChild then return containingChild end
+    end
+
+    return nil
+end
+
+
+function m.ContainsJoint(rootRigModel: RigModel, joint: BasePart): RigModel?
+    if rootRigModel.Joint == joint then return rootRigModel end
+
+    for _, child in pairs(rootRigModel.Children) do
+        local containingChild = m.ContainsJoint(child, joint)
+        if containingChild then return containingChild end
+    end
+
+    return nil
 end
 
 

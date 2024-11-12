@@ -34,7 +34,7 @@ function m.DoRecordedActionResult<T,E>(
 end
 
 
-function m.DoRecordedAction<T,E>(name: string, _f: () -> ()): Result.Result<T,E>
+function m.DoRecordedAction<T>(name: string, _f: () -> ()): Result.Result<T, string>
     return m.DoRecordedActionResult(name, function()
         return Result.Pcall(_f)
     end)

@@ -1,11 +1,15 @@
 assert(plugin, "Script must run as a plugin.")
 
-local Iris = require(script.Parent.Packages.Iris)
-local Ui = require(script.Ui)
 
 local C = require(script["Ui.constants"])
 local T = require(script["Ui.types"])
 
+C.GET_PLUGIN = function()
+    return plugin
+end
+
+local Iris = require(script.Parent.Packages.Iris)
+local Ui = require(script.Ui)
 
 function _getThemeId(): string
     local retrieved = plugin:GetSetting(C.SETTING_KEYS.THEME)
@@ -44,14 +48,18 @@ local button = toolbar:CreateButton(
 )
 
 
-function _setActive(state: boolean)
-    button:SetActive(state)
-    button.Icon = if state
+function _setActive(isActive: boolean)
+    button:SetActive(isActive)
+    button.Icon = if isActive
         then C.ICONS.Opened
         else C.ICONS.Closed
-    screenGui.Parent = if state
+    screenGui.Parent = if isActive
         then game:GetService("CoreGui")
         else script
+
+    if not isActive then
+        Ui.Cleanup(state)
+    end
 end
 
 

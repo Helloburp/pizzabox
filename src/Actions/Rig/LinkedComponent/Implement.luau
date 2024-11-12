@@ -13,7 +13,7 @@ type TargetDefinition = T.TargetDefinition
 local m = {}
 
 
-function _setupStringValue(component: Instance, target: TargetDefinition?)
+function _setupStringValue(component: Instance, targetName: string, target: TargetDefinition?)
     if target and target:IsA("ObjectValue") then
         target:Destroy()
     end
@@ -22,7 +22,7 @@ function _setupStringValue(component: Instance, target: TargetDefinition?)
         and target
         or Instance.new("StringValue", component)
     newTarget.Name = "Target"
-    newTarget.Value = component.Name
+    newTarget.Value = targetName
 end
 
 
@@ -32,7 +32,7 @@ function m.ImplementBone(
     rootModel: Model
 ): Result<BoneDefinition, string>
     local existingBone = Parse.ParseBoneDefinition(bone, rootModel)
-    _setupStringValue(bone, existingBone and existingBone.Target or nil)
+    _setupStringValue(bone, targetPart.Name, existingBone and existingBone.Target or nil)
 
     local boneDefinition = Parse.ParseBoneDefinition(bone, rootModel)
     return if boneDefinition
@@ -47,7 +47,7 @@ function m.ImplementBeam(
     rootModel: Model
 )
     local existingBeam = Parse.ParseBeamDefinition(beam, rootModel)
-    _setupStringValue(beam, existingBeam and existingBeam.Target or nil)
+    _setupStringValue(beam, attachment.Name, existingBeam and existingBeam.Target or nil)
 
     local beamDefinition = Parse.ParseBeamDefinition(beam, rootModel)
     return if beamDefinition

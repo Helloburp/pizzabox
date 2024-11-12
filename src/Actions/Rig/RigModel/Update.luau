@@ -50,12 +50,13 @@ function m.DisableJointTransparency(rootRigModel: RigModel)
 end
 
 
-function m.MakeJointsInvisible(rootRigModel: RigModel)
+function m.MakeJointsInvisible(rootRigModel: RigModel, transparency: number?)
+    m.DisableJointTransparency(rootRigModel)
     local function _recurse(rigModel: RigModel)
         local joint = rigModel.Joint
         if not joint:GetAttribute(JOINT_ATTR) then
             joint:SetAttribute(JOINT_ATTR, joint.Transparency)
-            joint.Transparency = 1
+            joint.Transparency = transparency or 1
         end
 
         for _, child in pairs(rigModel.Children) do

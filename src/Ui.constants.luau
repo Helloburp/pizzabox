@@ -19,7 +19,13 @@ function _newSetHue(targetColor: Color3): (Color3) -> (Color3)
     end
 end
 
+
+function _getPlugin(): Plugin
+    error("Must be implemented by the Server Script!")
+end
+
 return {
+    GET_PLUGIN = _getPlugin,
     MAIN_BUTTON_ID = "PIZZABOX",
     VERSION = require(script.Parent.VERSION),
     IRIS_CONFIGS = {

@@ -29,8 +29,21 @@ function m.Parse(): Result.Result<RigSelection, string>
 	end
 
     if not (modelList and modelList:IsA("Model")) then
-        return Result.Err("The selected object is not a rig.")
+        return Result.Err("The selected object is not a rig. Rigs must be models.")
     end
+
+	if not modelList.Parent then
+		return Result.Err("No parent")
+	end
+
+	if modelList.Parent.ClassName == "Model" then
+		return Result.Err("A rig root must not be a child of another model.")
+	end
+
+	local rigRootModel = modelList:FindFirstChild("HumanoidRootPart")
+	if not (rigRootModel and rigRootModel:IsA("Model") and rigRootModel.PrimaryPart) then
+		return Result.Err("Rigs must have a child named HumanoidRootPart which is a Model.")
+	end
 
     return Result.Ok{
         Rig = modelList,

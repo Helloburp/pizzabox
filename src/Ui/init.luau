@@ -96,4 +96,9 @@ function m.FromState(
 end
 
 
+function m.Cleanup(state: T.State)
+    Rig.Cleanup(state.RigState)
+end
+
+
 return m
