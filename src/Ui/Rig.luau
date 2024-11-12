@@ -401,10 +401,12 @@ local _rigMode: (RigState) -> RigUiTransition? do
 
         local selection = selectionResult:Ok()
         if not selection then
-            Iris.Text({
+            if Iris.Text({
                 `No options available for selection. \n({selectionResult:Err()})`,
                 [Iris.Args.Text.Wrapped] = true
-            })
+            }).hovered() then
+                Iris.Tooltip("Instances with valid options are: Models, Parts, Bones, and Beams.")
+            end
             return
         end
 
