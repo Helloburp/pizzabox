@@ -41,6 +41,9 @@ return {
         GOLD = _newConfig(
             _newSetHue(BrickColor.new("Gold").Color)
         ),
+        BLUE = _newConfig(
+            _newSetHue(BrickColor.new("Electric blue").Color)
+        ),
     },
     ICONS = {
         Opened = "rbxassetid://119063127894512",
