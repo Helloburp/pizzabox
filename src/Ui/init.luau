@@ -11,13 +11,23 @@ local m = {}
 function _menubar(state: T.State)
     Iris.MenuBar()
     do
-        Iris.Menu("View")
-        Iris.MenuToggle(
-            "Rigging", {isChecked = state.WindowStates.Rig}
-        )
-        Iris.MenuToggle(
-            "OC Parts", {isChecked = state.WindowStates.OC}
-        )
+        local function _colorChangeToggle(name: string, value: string)
+            local checkedState = Iris.State(state.Settings.Theme:get() == value)
+            if Iris.MenuToggle(
+                name, {isChecked = checkedState}
+            ).checked() then
+                state.Settings.Theme:set(value)
+            end
+            if state.Settings.Theme:get() ~= value then
+                checkedState:set(false)
+            end
+        end
+        Iris.Menu("Theme")
+        _colorChangeToggle("Poop-Floor Brown", "DEFAULT")
+        _colorChangeToggle("Rockin' Red", "RED")
+        _colorChangeToggle("Afton Aubergine", "PURPLE")
+        _colorChangeToggle("Old but Gold", "GOLD")
+        _colorChangeToggle("Remnant Blue", "BLUE")
         Iris.End()
     end
     Iris.End()
@@ -50,20 +60,12 @@ function _windowContents(state: T.State)
     Iris.Separator()
     Iris.Table(2)
     do
-        Iris.RadioButton(
-            {"Floor-Poop Brown", "DEFAULT"}, {index = state.Settings.Theme}
+        Iris.Checkbox(
+            "Rigging", {isChecked = state.WindowStates.Rig}
         )
         Iris.NextColumn()
-        Iris.RadioButton(
-            {"Afton Alder", "PURPLE"}, {index = state.Settings.Theme}
-        )
-        Iris.NextColumn()
-        Iris.RadioButton(
-            {"Rockin' Red", "RED"}, {index = state.Settings.Theme}
-        )
-        Iris.NextColumn()
-        Iris.RadioButton(
-            {"Old but Gold", "GOLD"}, {index = state.Settings.Theme}
+        Iris.Checkbox(
+            "OC Parts", {isChecked = state.WindowStates.OC}
         )
     end
     Iris.End()
