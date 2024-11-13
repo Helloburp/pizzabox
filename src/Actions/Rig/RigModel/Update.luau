@@ -21,6 +21,7 @@ end
 
 
 function m.SetLevelOfDetailDemo(rootModel: Model, level: number)
+    m.DisableLevelOfDetailDemo(rootModel)
     for _, part in pairs(rootModel:GetDescendants()) do
         if not part:IsA("BasePart") then continue end
         local myLevel = tonumber(string.match(part.Name, "^LOD(%d-)$"))

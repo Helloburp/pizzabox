@@ -292,12 +292,7 @@ local _rigMode: (RigState) -> RigUiTransition? do
         Iris.Text("Demo LOD")
         Iris.SameLine()
         local function _setLod(level: number)
-            Helpers.RecordActionToOutputPcall(
-                myOutput.Errors, `SETLOD_{level}`,
-                function()
-                    RigModelUpdate.SetLevelOfDetailDemo(state.UiState.RootModel, level)
-                end
-            )
+            RigModelUpdate.SetLevelOfDetailDemo(state.UiState.RootModel, level)
         end
 
         local function _lodButton(text: string, tooltip: string, _f: () -> ())
