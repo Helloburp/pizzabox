@@ -56,16 +56,14 @@ export type RigUiEditingState = {
     _t: "RigEditing",
     RootModel: Model,
     WorkingFolder: Folder,
-    Mode: RigUiMode
-} 
-
-
-export type RigUiTransition = {
-    _t: "Mode",
-    Value: RigUiMode,
+    SelectedComponent: RigUiSelectedComponent?,
+    Output: ActionOutput
 } | {
-    _t: "EditingState",
-    Value: RigUiEditingState
+    _t: "RigAnimating",
+    BaseRootModel: Model?,
+    AnimationRigRootModel: Model,
+    WorkingFolder: Folder,
+    Output: ActionOutput
 }
 
 

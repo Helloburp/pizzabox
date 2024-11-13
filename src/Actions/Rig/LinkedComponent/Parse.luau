@@ -141,4 +141,21 @@ function m.EvaluateActiveLink(
 end
 
 
+function m.EvaluateBoneNames(rootModel: Model): Result<boolean, string>
+	local names = {}
+	for _, v in pairs(rootModel:GetDescendants()) do
+		if not v:IsA("Bone") then continue end
+		if names[v.Name] then
+			return Result.Err(
+				`Found two or more bones named '{v.Name}'. \z
+				You may experience issues when trying to use animation plugins.`
+			)
+		end
+		names[v.Name] = v
+	end
+
+	return Result.Ok(true)
+end
+
+
 return m

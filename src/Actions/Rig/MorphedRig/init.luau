@@ -26,7 +26,7 @@ function m.NewAnimationRig(rig: Model): Result<MorphedRig,string>
 end
 
 
-function m.BeginAnimationMode(rig: Model, animatedRig: Model)
+function m.AnimateExistingRig(rig: Model, animatedRig: Model)
     local oldParent = rig.Parent
     animatedRig:PivotTo(rig:GetPivot())
     rig.Parent = game:GetService("ServerStorage")
@@ -34,7 +34,7 @@ function m.BeginAnimationMode(rig: Model, animatedRig: Model)
 end
 
 
-function m.EndAnimationMode(rig: Model, animatedRig: Model)
+function m.StopAnimatingExistingRig(rig: Model, animatedRig: Model)
     local oldParent = animatedRig.Parent
     animatedRig.Parent = game:GetService("ServerStorage")
     rig.Parent = oldParent
