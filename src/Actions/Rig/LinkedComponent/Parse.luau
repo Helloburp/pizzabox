@@ -45,7 +45,7 @@ end
 
 
 function m.ParseActiveBone(self: BoneDefinition): ActiveBone?
-	local target = m.ParseValueAsInstanceType(self.Target, self.RootModel, "PVInstance")
+	local target = m.ParseValueAsInstanceType(self.Target, self.RootModel, "BasePart")
 	local children = {}
 
 	for _, child in pairs(self.Component:GetChildren()) do
