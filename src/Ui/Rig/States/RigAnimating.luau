@@ -35,9 +35,14 @@ function m.AnimatorMode(state: RigState): RigUiEditingState?
         dtState:set(tic)
     end
 
-    local morphedRig = MorphedRig.Parse.ParseMorphedRig(
-        state.UiState.AnimationRigRootModel
-    ):Ok()
+    local morphedRig = (function()
+        local morphedRig = MorphedRig.Parse.ParseMorphedRig(
+            state.UiState.AnimationRigRootModel
+        ):Ok()
+        if not morphedRig then return nil end
+        if not game:IsAncestorOf(morphedRig.Rig.Root.Model) then return nil end
+        return morphedRig
+    end)()
 
 
     local transition: RigUiEditingState? = nil
