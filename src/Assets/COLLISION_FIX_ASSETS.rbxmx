@@ -1,0 +1,39 @@
+<roblox xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.roblox.com/roblox.xsd" version="4">
+	<Meta name="ExplicitAutoJoints">true</Meta>
+	<External>null</External>
+	<External>nil</External>
+	<Item class="Folder" referent="RBXD29CA6C209B04D20AE8C8EF62F054491">
+		<Properties>
+			<BinaryString name="AttributesSerialize"></BinaryString>
+			<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+			<bool name="DefinesCapabilities">false</bool>
+			<string name="Name">CollisionFIx</string>
+			<int64 name="SourceAssetId">-1</int64>
+			<BinaryString name="Tags"></BinaryString>
+		</Properties>
+		<Item class="LocalScript" referent="RBX88F3BA068B8E4D51942A82994D15402D">
+			<Properties>
+				<BinaryString name="AttributesSerialize"></BinaryString>
+				<SecurityCapabilities name="Capabilities">0</SecurityCapabilities>
+				<bool name="DefinesCapabilities">false</bool>
+				<bool name="Disabled">false</bool>
+				<Content name="LinkedSource"><null></null></Content>
+				<string name="Name">COLLISION_FIX</string>
+				<token name="RunContext">0</token>
+				<string name="ScriptGuid">{E20C569C-8C1B-44F6-BD0D-021EC75A4964}</string>
+				<ProtectedString name="Source"><![CDATA[local char = game.Players.LocalPlayer.Character
+
+while game:GetService("RunService").Heartbeat:Wait() do
+	for _, v in pairs(char:GetChildren()) do
+		if not v:IsA("BasePart") then continue end
+		if not script:GetAttribute(v.Name) then continue end
+
+		v.CanCollide = false
+	end
+end]]></ProtectedString>
+				<int64 name="SourceAssetId">-1</int64>
+				<BinaryString name="Tags"></BinaryString>
+			</Properties>
+		</Item>
+	</Item>
+</roblox>
