@@ -104,4 +104,16 @@ function m.ContainsJoint(rootRigModel: RigModel, joint: BasePart): RigModel?
 end
 
 
+function m.ContainsModelWithName(rootRigModel: RigModel, name: string): RigModel?
+    for _, child in pairs(rootRigModel.Children) do
+        if child.Model.Name == name then return child end
+
+        local foundModel = m.ContainsModelWithName(child, name)
+        if foundModel then return foundModel end
+    end
+
+    return nil
+end
+
+
 return m
