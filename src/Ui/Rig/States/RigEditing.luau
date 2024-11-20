@@ -11,9 +11,7 @@ local T_RIGMODEL = require(inst_rig_actions.RigModel.types)
 type RigModel = T_RIGMODEL.RigModel
 type Rig = T_RIGMODEL.Rig
 
-local MorphedRig = setmetatable({
-    
-}, {__index = require(inst_rig_actions.MorphedRig)})
+local MorphedRig = require(inst_rig_actions.MorphedRig)
 
 local LinkedComponent = setmetatable(
     {
@@ -21,6 +19,12 @@ local LinkedComponent = setmetatable(
     },
     {__index = require(inst_rig_actions.LinkedComponent)}
 )
+
+local CollisionOverride = {
+    Instantiate = require(inst_rig_actions.CollisionOverride.Instantiate),
+    Parse = require(inst_rig_actions.CollisionOverride.Parse),
+    Update = require(inst_rig_actions.CollisionOverride.Update),
+}
 
 local inst_root = script.Parent.Parent.Parent.Parent
 local Output = require(inst_root.Ui.Output)
@@ -87,6 +91,8 @@ function m.RigMode(state: RigState): RigUiEditingState?
     Iris.Separator()
     _selectionOptions(state, rig)
     Iris.Separator()
+    _collisionFixWidget(state, rig and rig.Root)
+    Iris.Separator()
 
     if Iris.Button("Exit Edit Mode").clicked() then
         transition = Instantiate.NewNotEditingState()
@@ -103,6 +109,68 @@ function m.RigMode(state: RigState): RigUiEditingState?
     MacroElements.OutputText(Output.Format(myOutput))
 
     return transition
+end
+
+
+function _collisionFixWidget(state: RigState, rootRigModel: RigModel?)
+    assert(state.UiState._t == "RigEditing")
+    if not rootRigModel then
+        Output.Set(state.UiState.Output.Notices, "COLLISION_FIX", nil)
+        return
+    end
+
+    local lowerTorso = RigModel.Parse.ContainsModelWithName(rootRigModel, "LowerTorso")
+    if not lowerTorso then
+        Output.Set(state.UiState.Output.Notices, "COLLISION_FIX",
+            `Rig does not have a LowerTorso, so Collision Overriding is not available.`
+        )
+        return
+    end
+    Output.Set(state.UiState.Output.Notices, "COLLISION_FIX", nil)
+
+    local currentValidScript = CollisionOverride.Parse.ParseValidScript(lowerTorso.Model):Ok()
+    local lastSettings = (function()
+        local lastScript = CollisionOverride.Parse.GetExistingScripts(lowerTorso.Model)[1]
+        return lastScript
+            and CollisionOverride.Parse.GetSettings(lastScript)
+            or {} :: {[Enum.BodyPartR15]: boolean}
+    end)()
+
+    if not currentValidScript then
+        if Iris.Button("Add Collision Override Script").clicked() then
+
+            Helpers.RecordActionToOutputResult(state.UiState.Output.Errors, "COLLISION_FIX",
+                function()
+                    CollisionOverride.Instantiate.Clear(lowerTorso.Model)
+                    local newScript = CollisionOverride.Instantiate.New(lowerTorso.Model)
+                    CollisionOverride.Update.UpdateSettings(newScript, lastSettings)
+                end
+            )
+        end
+        return
+    else
+        local states = {}
+        for _, enumItem: Enum.BodyPartR15 in pairs(Enum.BodyPartR15:GetEnumItems()) do
+            states[enumItem] = Iris.State(lastSettings[enumItem])
+        end
+
+        Iris.Tree("Remove Collision From...")
+        Iris.Table(3)
+        for _, enumItem: Enum.BodyPartR15 in pairs(Enum.BodyPartR15:GetEnumItems()) do
+            Iris.Checkbox(enumItem.Name, {isChecked = states[enumItem]})
+            Iris.NextColumn()
+        end
+        Iris.End()
+        Iris.End()
+
+        local newSettings = {}
+        for enumItem, state in pairs(states) do
+            newSettings[enumItem] = state:get()
+        end
+
+        CollisionOverride.Update.UpdateSettings(currentValidScript, newSettings)
+    end
+
 end
 
 
