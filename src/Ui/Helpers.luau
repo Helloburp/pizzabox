@@ -14,7 +14,7 @@ type Result<T,E> = Result.Result<T,E>
 local m = {}
 
 
-function m.RecordActionToOutputPcall<T>(
+function m.RecordActionToOutputPcall(
     list: {TaggedText},
     id: string,
     _f: () -> ()
@@ -26,8 +26,10 @@ function m.RecordActionToOutputResult<T>(
     list: {TaggedText},
     id: string,
     _f: () -> Result<T,string>
-)
-    Output.Set(list, id, ActionHandling.DoRecordedActionResult(id, _f):Err())
+): T?
+    local result = ActionHandling.DoRecordedActionResult(id, _f)
+    Output.Set(list, id, result:Err())
+    return result:Ok()
 end
 
 
