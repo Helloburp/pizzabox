@@ -139,7 +139,7 @@ function _collisionFixWidget(state: RigState, rootRigModel: RigModel?)
     if not currentValidScript then
         if Iris.Button("Add Collision Override Script").clicked() then
 
-            Helpers.RecordActionToOutputResult(state.UiState.Output.Errors, "COLLISION_FIX",
+            Helpers.RecordActionToOutputPcall(state.UiState.Output.Errors, "COLLISION_FIX",
                 function()
                     CollisionOverride.Instantiate.Clear(lowerTorso.Model)
                     local newScript = CollisionOverride.Instantiate.New(lowerTorso.Model)
@@ -157,10 +157,18 @@ function _collisionFixWidget(state: RigState, rootRigModel: RigModel?)
         Iris.Tree("Remove Collision From...")
         Iris.Table(3)
         for _, enumItem: Enum.BodyPartR15 in pairs(Enum.BodyPartR15:GetEnumItems()) do
+            if enumItem.Name == "Unknown" or enumItem.Name == "RootPart" then continue end
             Iris.Checkbox(enumItem.Name, {isChecked = states[enumItem]})
             Iris.NextColumn()
         end
         Iris.End()
+        if Iris.Button("Delete Collision Override Script").clicked() then
+
+            Helpers.RecordActionToOutputPcall(state.UiState.Output.Errors, "COLLISION_FIX",
+                function() currentValidScript.Parent = nil end
+            )
+        end
+
         Iris.End()
 
         local newSettings = {}

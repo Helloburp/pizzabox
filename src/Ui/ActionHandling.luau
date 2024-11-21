@@ -10,8 +10,8 @@ function m.DoRecordedActionResult<T,E>(
     local isRecording = ChangeHistoryService:TryBeginRecording(name)
     assert(
         isRecording,
-        `PLUGIN ERROR: Attempted to start a recording before{" "
-        }another one was finished.`
+        `PLUGIN ERROR: Attempted to start a recording before \z
+        another one was finished.`
     )
     local s_r, r = pcall(_f)
     local s, e = nil, nil

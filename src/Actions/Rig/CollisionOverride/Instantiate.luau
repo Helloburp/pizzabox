@@ -4,8 +4,7 @@ local Result = require(inst_root.Result)
 type Result<T,E> = Result.Result<T,E>
 
 local inst_assets = inst_root.Assets
-local COLLISION_FIX_SCRIPT = inst_assets.COLLISION_FIX_ASSETS
-    :FindFirstChildWhichIsA("LocalScript")
+local COLLISION_FIX_SCRIPT = inst_assets:WaitForChild("COLLISION_FIX", 5)
     or error("Failed to find COLLISION_FIX script in plugin assets!")
 
 
@@ -23,6 +22,7 @@ end
 function m.New(lowerTorsoModel: Model): LocalScript
     local newScript = COLLISION_FIX_SCRIPT:Clone()
     newScript.Parent = lowerTorsoModel
+    newScript.Disabled = false
     return newScript
 end
 

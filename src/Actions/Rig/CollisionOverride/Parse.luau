@@ -4,8 +4,7 @@ local Result = require(inst_root.Result)
 type Result<T,E> = Result.Result<T,E>
 
 local inst_assets = inst_root.Assets
-local COLLISION_FIX_SCRIPT = inst_assets.COLLISION_FIX_ASSETS
-    :FindFirstChildWhichIsA("LocalScript")
+local COLLISION_FIX_SCRIPT = inst_assets:WaitForChild("COLLISION_FIX", 5)
     or error("Failed to find COLLISION_FIX script in plugin assets!")
 
 
