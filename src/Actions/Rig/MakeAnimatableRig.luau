@@ -1,9 +1,12 @@
 local m = {}
 
+local inst_root = script.Parent.Parent.Parent
+local inst_morph = inst_root.TprrMorphLib.OldTprrMorph
 
-local utilities = require(script.Parent.MorphUtils)
-local morph = require(script.Parent.OldTprrMorph)
-local Result = require(script.Parent.Parent.Parent.Result)
+local MorphUtils = require(script.Parent.MorphUtils)
+
+local Morph = require(inst_morph)
+local Result = require(inst_root.Result)
 
 
 function m.MakeRig(model: Model): Result.Result<Model, string>
@@ -24,7 +27,7 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 					return Result.Err(
 						model.Name .. " has no primary part."
 					)
-				elseif utilities.JointPartIndex[model.PrimaryPart.Name] ~= model.Name then
+				elseif MorphUtils.JointPartIndex[model.PrimaryPart.Name] ~= model.Name then
 					return Result.Err(
 						model.Name .. "\'s primary part is not named or set properly."
 					)
@@ -36,7 +39,7 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 	
 	Recurse(model)
 	
-	local baseCharacter = script.Parent.OldTprrMorph.PlayerRigData.Dummy:Clone()
+	local baseCharacter = inst_morph.PlayerRigData.Dummy:Clone()
 	local hum = baseCharacter:FindFirstChildOfClass("Humanoid")
 	local animator = hum and hum:FindFirstChildWhichIsA("Animator")
 	if hum and not animator then
@@ -50,7 +53,7 @@ function m.MakeRig(model: Model): Result.Result<Model, string>
 		newModel.HumanoidRootPart.PrimaryPart.CFrame
 	)
 	
-	morph:MorphRig(baseCharacter, newModel, {UseManualWelds = true})
+	Morph:MorphRig(baseCharacter, newModel, {UseManualWelds = true})
 	
 	for _, v in pairs(baseCharacter:GetChildren()) do
 		if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
