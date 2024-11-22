@@ -1,8 +1,28 @@
-local markerMethods = require(script.MarkerTypes)
+local CameraShaker = require(script.Parent.CameraShaker)
 
-local module = {}
+local inst_marker_handlers = script.MarkerHandlers
 
-function module:New(animator)
+local MarkerHandlers = require(inst_marker_handlers)
+local Shake = require(inst_marker_handlers.Shake)
+export type DoShake = Shake.DoShake
+
+local m = {}
+
+
+function m.NewDefaultCameraShaker(): DoShake
+	local shaker = CameraShaker.new(Enum.RenderPriority.Camera.Value, function(shakeCFrame)
+		game.Workspace.Camera.CFrame *= shakeCFrame
+	end)
+
+	shaker:Start()
+
+	return function(...)
+		shaker:ShakeOnce(...)
+	end
+end
+
+
+function m:New(animator)
 	local o = {}
 	
 	assert(typeof(animator) == "Instance")
@@ -110,4 +130,4 @@ function module:New(animator)
 	return o
 end
 
-return module
+return m
