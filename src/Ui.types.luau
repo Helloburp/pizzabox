@@ -1,6 +1,9 @@
 local T_RIGMODEL = require(script.Parent.Actions.Rig.RigModel.types)
 type RigModel = T_RIGMODEL.RigModel
 
+local MorphEffects = require(script.Parent.TprrMorphLib.MorphEffects)
+type MorphEffectsController = MorphEffects.MorphEffectsController
+
 
 type IrisState<T> = any
 
@@ -38,17 +41,6 @@ export type RigUiSelectedComponent = {
     RigModel: RigModel
 }
 
-export type RigUiMode = {
-    _t: "Static",
-    SelectedComponent: RigUiSelectedComponent?,
-    Output: ActionOutput
-} | {
-    _t: "Animated",
-    AnimationRigRootModel: Model,
-    Output: ActionOutput
-}
-
-
 export type RigUiEditingState = {
     _t: "NotEditing",
     Output: ActionOutput
@@ -62,6 +54,7 @@ export type RigUiEditingState = {
     _t: "RigAnimating",
     BaseRootModel: Model?,
     AnimationRigRootModel: Model,
+    MorphEffectsController: MorphEffectsController,
     WorkingFolder: Folder,
     Output: ActionOutput
 }
@@ -71,7 +64,7 @@ export type RigState = {
     LastRigVisualizer: Instance?,
     RigVisualizerState: IrisState<boolean>,
     LiveLinkedComponentUpdatesState: IrisState<boolean>,
-    AnimationPlayingState: IrisState<boolean>,
+    CamShakeEnabledState: IrisState<boolean>,
     UiState: RigUiEditingState
 }
 

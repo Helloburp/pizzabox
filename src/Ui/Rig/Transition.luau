@@ -10,7 +10,6 @@ local Selection = game:GetService("Selection")
 
 local T = require(script.Parent.Parent.Parent["Ui.types"])
 type RigState = T.RigState
-type RigUiMode = T.RigUiMode
 type RigUiEditingState = T.RigUiEditingState
 
 local m = {}
@@ -39,6 +38,8 @@ function m.TransitionEditingState(state: RigState, editingState: RigUiEditingSta
             )
             oldEditingState.AnimationRigRootModel:Destroy()
         end
+
+        oldEditingState.MorphEffectsController.Cleanup()
     end
 
 

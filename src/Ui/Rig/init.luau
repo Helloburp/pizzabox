@@ -1,7 +1,6 @@
 local Iris = require(script.Parent.Parent.Parent.Packages.Iris)
 local m = {}
 
-local Output = require(script.Parent.Output)
 local Result = require(script.Parent.Parent.Result)
 
 local States = {
@@ -16,7 +15,6 @@ local Transition = require(script.Transition)
 local T = require(script.Parent.Parent["Ui.types"])
 type RigState = T.RigState
 type State = T.State
-type RigUiMode = T.RigUiMode
 type RigUiSelectedComponent = T.RigUiSelectedComponent
 
 type RigUiEditingState = T.RigUiEditingState
@@ -71,6 +69,7 @@ function m.State(): RigState
         RigVisualizerState = Iris.State(false),
         LiveLinkedComponentUpdatesState = Iris.State(true),
         AnimationPlayingState = Iris.State(false),
+        CamShakeEnabledState = Iris.State(false),
         UiState = States.Instantiate.NewNotEditingState(),
     }
 end

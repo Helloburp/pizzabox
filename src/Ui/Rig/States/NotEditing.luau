@@ -37,7 +37,7 @@ function m.NotEditingState(state: RigState): RigUiEditingState?
             transition = Instantiate.NewRigEditingState(selectionOutput.SelectionResult.Rig)
         elseif selectionOutput.SelectionResult._t == "AnimatedRig" then
             transition = Instantiate.NewRigAnimatingState(
-                selectionOutput.SelectionResult.AnimatedRig
+                selectionOutput.SelectionResult.AnimatedRig, nil, state.CamShakeEnabledState
             )
         end
     end

@@ -2,6 +2,11 @@ local IrisTemplateConfig =
     require(script.Parent.Parent.Packages.Iris).TemplateConfig
 
 
+local MorphEffects = require(script.Parent.TprrMorphLib.MorphEffects)
+local _shake = MorphEffects.NewDefaultCameraShaker()
+
+local DummyWidget = nil
+
 function _newConfig(_modulate: (Color3) -> Color3)
     local myConfig = table.clone(IrisTemplateConfig.colorDark)
     for k, v in pairs(myConfig) do
@@ -20,12 +25,9 @@ function _newSetHue(targetColor: Color3): (Color3) -> (Color3)
 end
 
 
-function _getPlugin(): Plugin
-    error("Must be implemented by the Server Script!")
-end
-
-return {
-    GET_PLUGIN = _getPlugin,
+local m = {
+    GET_PLUGIN = function(): Plugin error("Must be implemented by the Server Script!") end,
+    GET_SOUND_PARENT = function() end,
     MAIN_BUTTON_ID = "PIZZABOX",
     VERSION = require(script.Parent.VERSION),
     IRIS_CONFIGS = {
@@ -56,5 +58,28 @@ return {
         ERROR = Color3.new(1, 0.5, 0.5),
         WARNING = Color3.new(1, 0.8, 0.5),
         NOTICE = Color3.new(0.7, 0.7, 1)
-    }
+    },
+    SHAKE_CALLBACK = _shake
 }
+
+
+function m.GET_SOUND_PARENT(): Instance
+    local myPlugin = m.GET_PLUGIN()
+
+    if not DummyWidget then
+        DummyWidget = myPlugin:CreateDockWidgetPluginGui(
+            "soundPlayer",
+            DockWidgetPluginGuiInfo.new(
+                Enum.InitialDockState.Float,
+                false, true,
+                10, 10,
+                10, 10
+            )
+        )
+        DummyWidget.Name = "soundPlayer"
+        DummyWidget.Title = "Sound Player"
+    end
+    return DummyWidget
+end
+
+return m

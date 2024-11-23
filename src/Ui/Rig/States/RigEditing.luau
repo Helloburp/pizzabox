@@ -221,7 +221,7 @@ function _animationModeButton(state: RigState, rig: Rig?): RigUiEditingState?
         assert(newModel)
 
         local transition = Instantiate.NewRigAnimatingState(
-            newModel.Rig.Root.Model, state.UiState.RootModel
+            newModel.Rig.Root.Model, state.UiState.RootModel, state.CamShakeEnabledState
         )
         Output.Set(transition.Output.Notices, "RIG_NOTICE",
             "Animated Rig created. \z
