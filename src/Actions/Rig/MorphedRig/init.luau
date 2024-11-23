@@ -48,8 +48,9 @@ end
 
 
 function m.StopAnimations(morphedRig: MorphedRig)
-    for _, animation in pairs(morphedRig.Animator:GetPlayingAnimationTracks()) do
-        animation:Stop()
+    for _, track in pairs(morphedRig.Animator:GetPlayingAnimationTracks()) do
+        track:Stop()
+        track:Destroy()
     end
 end
 
