@@ -12,7 +12,6 @@ function m.PlayThenDestroyFromLibrary(
 	local librarySound = m.FetchSound(soundName, soundLibrary)		
 
 	if not librarySound then
-		warn("Attempting to play a sound that does not exist:", soundName)
 		return
 	end
 
