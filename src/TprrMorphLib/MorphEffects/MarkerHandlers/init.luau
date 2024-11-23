@@ -12,49 +12,30 @@ function m.NewMarkerHandlers(
 	soundLibrary: Instance,
 	character: Model,
 	root: PVInstance,
-	_shake: DoShake
-): {[string]: (any) -> ()}
+	_shake: DoShake,
+	soundParentOverride: Instance?
+): {[string]: (string) -> ()}
 	return {
-		Sound = function(name: any)
-			assert(
-				typeof(name) == "string",
-				"Animation Marker named 'Sound' must have a value of type String."
-			)
-			Sound.PlayThenDestroyFromLibrary(name, soundLibrary, root)
+		Sound = function(name)
+			Sound.PlayThenDestroyFromLibrary(name, soundLibrary, soundParentOverride or root, 30)
 		end,
 
-		Shake = function(intensity: any)
-			assert(
-				typeof(intensity) == "number",
-				"Animation Marker named 'Shake' must have a value of type Number."
-			)
-			Shake.CameraShake(intensity, root:GetPivot().Position, _shake)
+		Shake = function(intensity)
+			Shake.CameraShake(tonumber(intensity) or 3, root:GetPivot().Position, _shake)
 		end,
 
-		Emit = function(id: any)
-			assert(
-				typeof(id) == "string",
-				"Animation Marker named 'Emit' must have a value of type String."
-			)
+		Emit = function(id)
 			for _, instance in pairs(character:GetDescendants()) do
 				if not (instance:IsA("ParticleEmitter") and instance.Name == id) then continue end
-				instance:Emit(instance:GetAttribute("EMIT_AMOUNT") or instance.Rate)
+				instance:Emit(tonumber(instance:GetAttribute("EMIT_AMOUNT")) or instance.Rate)
 			end
 		end,
 
-		Show = function(name: any)
-			assert(
-				typeof(name) == "string",
-				"Animation Marker named 'Show' must have a value of type String."
-			)
+		Show = function(name)
 			_changeTransparencyOfPartsWithName(character, name, -1)
 		end,
 
-		Hide = function(name: any)
-			assert(
-				typeof(name) == "string",
-				"Animation Marker named 'Hide' must have a value of type String."
-			)
+		Hide = function(name)
 			_changeTransparencyOfPartsWithName(character, name, 1)
 		end
 	}
