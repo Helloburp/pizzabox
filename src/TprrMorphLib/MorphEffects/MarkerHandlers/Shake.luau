@@ -14,8 +14,7 @@ export type DoShake = (
 function m.CameraShake(intensity: number, origin: Vector3, _shake: DoShake)
 	local dist = (Workspace.CurrentCamera.CFrame.Position - origin).Magnitude
 	local max = tonumber(intensity)
-    if dist <= max then return end
-    if game.Workspace.Camera.CameraType ~= Enum.CameraType.Custom then return end
+    if dist > max then return end
 
     local magnitude = (max - dist) * intensity/6
     _shake(
