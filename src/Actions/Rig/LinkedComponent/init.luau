@@ -39,29 +39,38 @@ function m.NewBoneTarget(bone: Bone, rootModel: Model): Result<BoneDefinition,st
 end
 
 
-function m.NewBoneModel(bone: Bone, rootModel: Model): Result<BoneDefinition,string>
+function m.NewBoneModel(bone: Bone, rootModel: Model): (Result<BoneDefinition,string>, RigModel?)
     local targetParentResult = _getTargetParent(bone, rootModel)
     local targetParent = targetParentResult:Ok()
-    if not targetParent then return targetParentResult end
+    if not targetParent then return targetParentResult, nil end
 
     local name = Update.GetUniqueTargetName(`b_{bone.Name}`, rootModel)
     local rigModel = RigModelInstantiate.NewRigModel(`m_{name}`, name, JOINT_SIZE, bone.WorldCFrame)
+    rigModel.Model.Parent = targetParent
 
-    return Implement.ImplementBone(bone, rigModel.Joint, rootModel)
+    return Implement.ImplementBone(bone, rigModel.Joint, rootModel), rigModel
 end
 
 
-function m.NewBoneModelRecursive(bone: Bone, rootModel: Model): Result<boolean,string>
-    local err = m.NewBoneModel(bone, rootModel):Err()
-    if err then return Result.Err(`'{bone.Name}': {err}`) end
+function m.NewBoneModelRecursive(bone: Bone, rootModel: Model): (Result<boolean,string>, RigModel?)
+    local result, rigModel = m.NewBoneModel(bone, rootModel)
+    local err = result:Err()
+    if err then return Result.Err(`'{bone.Name}': {err}`), nil end
+    assert(rigModel, "Bone model was successfully created, but no rig model was made.")
     
     for _, child in pairs(bone:GetChildren()) do
         if not child:IsA("Bone") then continue end
-        local childErr = m.NewBoneModelRecursive(child, rootModel):Err()
-        if childErr then return Result.Err(childErr) end
+        local childResult, childRigModel = m.NewBoneModelRecursive(child, rootModel)
+        local childErr = childResult:Err()
+        if childErr then return Result.Err(childErr), nil end
+        assert(
+            childRigModel,
+            "Child bone model was successfully created, but no rig model was made."
+        )
+        childRigModel.Model.Parent = rigModel.Model
     end
 
-    return Result.Ok(true)
+    return Result.Ok(true), rigModel
 end
 
 
