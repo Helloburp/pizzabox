@@ -119,6 +119,8 @@ function module:MorphPart(part, model, meta)
 				if not child:GetAttribute("WeldOverride") then
 					WeldParts(child)
 				end
+			elseif child:IsA("Folder") then
+				WeldParts(child)
 			end
 		end
 	end
