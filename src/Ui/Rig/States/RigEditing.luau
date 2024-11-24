@@ -394,8 +394,9 @@ function _selectionOptions(state: RigState, rig: Rig?)
         if newModel then Selection:Set({newModel.Joint}) end
 
     elseif selection._t == "Bone" then
-        Iris.Text(`Bone Options ({selection.Component.Name})`)
-        if Iris.Button("New Target").clicked() then
+        Iris.Text(`New Bone Target ({selection.Component.Name})`)
+        Iris.SameLine()
+        if Iris.Button("Part").clicked() then
             Helpers.RecordActionToOutputPcall(myOutput, "NEW_BONE_TARGET", function()
                 local def, err = LinkedComponent.NewBoneTarget(
                     selection.Component,
@@ -406,6 +407,35 @@ function _selectionOptions(state: RigState, rig: Rig?)
                 Selection:Set({target and target.Target})
             end)
         end
+        if Iris.Button("Model").clicked() then
+            Helpers.RecordActionToOutputPcall(myOutput, "NEW_BONE_TARGET_MODEL", function()
+                local def, err = LinkedComponent.NewBoneModel(
+                    selection.Component,
+                    rig.Root.Model
+                ):Unwrap()
+                if not def then error(err) end
+                local target = LinkedComponent.Parse.ParseActiveBone(def)
+                Selection:Set({target and target.Target})
+            end)
+        end
+        if Iris.Button("Model(s) (Recursive)").clicked() then
+            Helpers.RecordActionToOutputPcall(
+                myOutput,
+                "NEW_BONE_TARGET_MODEL_RECURSIVE",
+                function()
+                    local result, rigModel = LinkedComponent.NewBoneModelRecursive(
+                        selection.Component,
+                        rig.Root.Model
+                    )
+                    local def, err = result:Unwrap()
+                    if not def then error(err) end
+                    assert(rigModel, "Returned result, but not rig model.")
+
+                    Selection:Set({rigModel.Model})
+                end
+            )
+        end
+        Iris.End()
 
     elseif selection._t == "Beam" then
         Iris.Text(`Beam Options ({selection.Component.Name})`)
