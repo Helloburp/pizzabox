@@ -1,6 +1,8 @@
 
 local inst_rig_actions = script.Parent.Parent.Parent.Parent.Actions.Rig
 local RigSelection = require(inst_rig_actions.RigSelection)
+type RigSelection = RigSelection.RigSelection
+
 local NewStandardRig = require(inst_rig_actions.NewStandardRig)
 
 local inst_root = script.Parent.Parent.Parent.Parent
@@ -39,6 +41,15 @@ function m.NotEditingState(state: RigState): RigUiEditingState?
             transition = Instantiate.NewRigAnimatingState(
                 selectionOutput.SelectionResult.AnimatedRig, nil, state.CamShakeEnabledState
             )
+        elseif selectionOutput.SelectionResult._t == "MultiSelect" then
+            local allRoots = {}
+            for _, model in selectionOutput.SelectionResult.AnimatedRigs do
+                table.insert(allRoots, model)
+            end
+            for _, model in selectionOutput.SelectionResult.StaticRigs do
+                table.insert(allRoots, model)
+            end
+            transition = Instantiate.NewMultiSelectState(allRoots)
         end
     end
 
@@ -50,13 +61,13 @@ function _selectionView(
     state: RigState
 ): {
     EditButtonClicked: boolean,
-    SelectionResult: RigSelection.RigSelection
+    SelectionResult: RigSelection
 }?
     assert(state.UiState._t == "NotEditing")
-    local selection, err = RigSelection.Parse():Unwrap()
+    local selection, err = RigSelection.ParseAll(Selection:Get()):Unwrap()
 
-    local textArgs = if selection and selection.Joints then {
-            `Rig and Joints Selected: {selection.Rig.Name}, {selection.Joints.Name}`,
+    local textArgs = if selection and selection._t == "MultiSelect" then {
+            `Multiple rigs selected.`
         } elseif selection and selection._t == "StaticRig" then {
             `Rig selected: {selection.Rig.Name}`,
         } elseif selection and selection._t == "AnimatedRig" then {
@@ -76,7 +87,8 @@ function _selectionView(
     
     if Iris.Button(if selection._t == "StaticRig"
         then "Enter Edit Mode"
-        else "Enter Animation Mode"
+        elseif selection._t == "AnimatedRig" then "Enter Animation Mode"
+        else "Enter Multi-Rig Preview"
     ).clicked() then
         output.EditButtonClicked = true
     end

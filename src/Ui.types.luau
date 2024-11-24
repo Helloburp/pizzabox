@@ -57,6 +57,9 @@ export type RigUiEditingState = {
     MorphEffectsController: MorphEffectsController,
     WorkingFolder: Folder,
     Output: ActionOutput
+} | {
+    _t: "MultiSelect",
+    RigRootModels: {Model},
 }
 
 

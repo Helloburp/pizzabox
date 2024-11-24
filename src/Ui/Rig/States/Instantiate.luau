@@ -76,6 +76,15 @@ function m.NewRigAnimatingState(
     }
 end
 
+
+function m.NewMultiSelectState(modelRoots: {Model}): RigUiEditingState
+    return {
+        _t = "MultiSelect",
+        RigRootModels = modelRoots
+    }
+end
+
+
 function m.NewNotEditingState(): RigUiEditingState
     return {
         _t = "NotEditing",

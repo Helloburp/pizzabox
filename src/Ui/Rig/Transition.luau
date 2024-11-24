@@ -44,9 +44,7 @@ function m.TransitionEditingState(state: RigState, editingState: RigUiEditingSta
 
 
     -- Open the new state
-    if editingState._t == "NotEditing" then
-
-    elseif editingState._t == "RigEditing" then
+    if editingState._t == "RigEditing" then
         Selection:Set({editingState.RootModel})
 
     elseif editingState._t == "RigAnimating" then

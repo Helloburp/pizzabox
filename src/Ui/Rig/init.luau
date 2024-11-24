@@ -7,6 +7,7 @@ local States = {
     NotEditing = require(script.States.NotEditing),
     RigEditing = require(script.States.RigEditing),
     RigAnimating = require(script.States.RigAnimating),
+    MultiSelect = require(script.States.MultiSelect),
     Instantiate = require(script.States.Instantiate)
 }
 
@@ -26,9 +27,13 @@ function m.Cycle(state: State)
     local uiStateType = rigState.UiState._t
     local subWindowName = if uiStateType ~= "NotEditing"
         then (
-            if uiStateType == "RigEditing"
-                then `(Editing {rigState.UiState.RootModel.Name})`
-                else `(Animating {rigState.UiState.AnimationRigRootModel.Name})`
+            if uiStateType == "RigEditing" then
+                `(Editing {rigState.UiState.RootModel.Name})`
+            elseif uiStateType == "RigAnimating" then
+                `(Animating {rigState.UiState.AnimationRigRootModel.Name})`
+            elseif uiStateType == "MultiSelect" then
+                `({States.MultiSelect.WindowName(rigState)})`
+            else error(`Invalid state: {uiStateType}`)
         )
         else ""
 
@@ -39,6 +44,7 @@ function m.Cycle(state: State)
         if uiStateType == "NotEditing" then States.NotEditing.NotEditingState(rigState)
         elseif uiStateType == "RigEditing" then States.RigEditing.RigMode(rigState)
         elseif uiStateType == "RigAnimating" then States.RigAnimating.AnimatorMode(rigState)
+        elseif uiStateType == "MultiSelect" then States.MultiSelect.MultiSelectState(rigState)
         else error(`Invalid state: {uiStateType}`)
     
     if transition then
