@@ -2,6 +2,7 @@ local T = require(script.Parent.Parent["OC.types"])
 local Result = require(script.Parent.Parent.Parent.Result)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerStorage = game:GetService("ServerStorage")
 
 
 local m = {}
@@ -156,9 +157,9 @@ function m.ParseDataModel(): Result.Result<T.ParsedDataModel, string>
         return Result.Err("Did not find .OCDataModules in ReplicatedStorage.")
     end
 
-    local testModels = ReplicatedStorage:FindFirstChild(".OCTestModels")
+    local testModels = ServerStorage:FindFirstChild(".OCTestModels")
     if not testModels then
-        return Result.Err("Did not find .OCTestModels in ReplicatedStorage.")
+        return Result.Err("Did not find .OCTestModels in ServerStorage.")
     end
 
     local componentObjectShopData = (function()
