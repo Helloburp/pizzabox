@@ -129,6 +129,12 @@ function m.ParseActiveRiggedModel(model: Model, rootModel: Model): ActiveRiggedM
 end
 
 
+function m.EvaluateBoneAncestry(rootModel: Model): Result<boolean, string>
+	return _checkForUnriggedAncestorBones(rootModel, rootModel, false)
+end
+
+
+
 function m.EvaluateActiveLink(
 	link: ActiveLink<Instance,Instance>,
 	rootModel: Model
@@ -152,6 +158,33 @@ function m.EvaluateBoneNames(rootModel: Model): Result<boolean, string>
 			)
 		end
 		names[v.Name] = v
+	end
+
+	return Result.Ok(true)
+end
+
+
+function _checkForUnriggedAncestorBones(
+	rootModel: Model, parent: Instance, isDescendantOfUnriggedBone: boolean
+): Result<boolean, string>
+
+	local isBone = parent:IsA("Bone")
+	local isRiggedBone = parent:IsA("Bone") and m.ParseBoneDefinition(parent, rootModel)
+
+	if isRiggedBone and isDescendantOfUnriggedBone then
+		return Result.Err(`Bone '{parent.Name}' has a target, but is a descendant of bones \z
+			which do not. This may cause it not to rig properly.`)
+	end
+
+
+	local newIsDescendantOfUnriggedBone = isDescendantOfUnriggedBone or
+		(isBone and not isRiggedBone)
+
+	for _, child in parent:GetChildren() do
+		local result = _checkForUnriggedAncestorBones(
+			rootModel, child, newIsDescendantOfUnriggedBone
+		)
+		if result:Err() then return result end
 	end
 
 	return Result.Ok(true)

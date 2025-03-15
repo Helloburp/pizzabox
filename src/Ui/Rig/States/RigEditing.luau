@@ -99,11 +99,14 @@ function m.RigMode(state: RigState): RigUiEditingState?
     end
 
     if rig then
-        local evaluation = RigModel.Parse.EvaluateRigNames(rig)
-        Output.Set(myOutput.Warnings, "RIG_NAME_EVALUATION", evaluation:Err())
+        local rigNameEvaluation = RigModel.Parse.EvaluateRigNames(rig)
+        Output.Set(myOutput.Warnings, "RIG_NAME_EVALUATION", rigNameEvaluation:Err())
 
-        local boneEvaluation = LinkedComponent.Parse.EvaluateBoneNames(rig.Root.Model)
-        Output.Set(myOutput.Warnings, "BONE_NAME_EVALUATION", boneEvaluation:Err())
+        local boneNameEvaluation = LinkedComponent.Parse.EvaluateBoneNames(rig.Root.Model)
+        Output.Set(myOutput.Warnings, "BONE_NAME_EVALUATION", boneNameEvaluation:Err())
+
+        local boneAncestryEvaluation = LinkedComponent.Parse.EvaluateBoneAncestry(rig.Root.Model)
+        Output.Set(myOutput.Warnings, "BONE_ANCESTRY_EVALUATION", boneAncestryEvaluation:Err())
     end
 
     MacroElements.OutputText(Output.Format(myOutput))
