@@ -9,6 +9,18 @@ type RigModel = T.RigModel
 local m = {}
 
 
+function m.OrientRigJoints(rootRigModel: RigModel)
+    local rootOrientation = rootRigModel.Joint.CFrame - rootRigModel.Joint.Position
+    local function _recurse(parent: RigModel)
+        for _, child in parent.Children do
+            child.Joint.CFrame = CFrame.new(child.Joint.Position) * rootOrientation
+            _recurse(child)
+        end
+    end
+    _recurse(rootRigModel)
+end
+
+
 function m.DisableLevelOfDetailDemo(rootModel: Model)
     for _, part in pairs(rootModel:GetDescendants()) do
         if not part:IsA("BasePart") then continue end

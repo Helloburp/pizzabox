@@ -262,6 +262,14 @@ function _primaryParts(state: RigState, rig: Rig?)
         )
     end
     Iris.End()
+    Iris.SameLine()
+    if Iris.Button("Align Orientation to Root").clicked() and rig then
+        Helpers.RecordActionToOutputPcall(
+            myOutput.Errors, "SET_PRIMARYPARTS_ORIENTATION",
+            function() RigModel.Update.OrientRigJoints(rig.Root) end
+        )
+    end
+    Iris.End()
 end
 
 
