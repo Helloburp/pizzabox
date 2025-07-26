@@ -1,6 +1,9 @@
 local T_RIGMODEL = require(script.Parent.Actions.Rig.RigModel.types)
 type RigModel = T_RIGMODEL.RigModel
 
+local T_MORPHEDRIG = require(script.Parent.Actions.Rig.MorphedRig.types)
+type MorphedRig = T_MORPHEDRIG.MorphedRig
+
 local MorphEffects = require(script.Parent.TprrMorphLib.MorphEffects)
 type MorphEffectsController = MorphEffects.MorphEffectsController
 
@@ -65,6 +68,8 @@ export type RigUiEditingState = {
 
 export type RigState = {
     LastRigVisualizer: Instance?,
+    LastParsedRig: RigModel?,
+    LastMorphedRig: MorphedRig?,
     RigVisualizerState: IrisState<boolean>,
     LiveLinkedComponentUpdatesState: IrisState<boolean>,
     CamShakeEnabledState: IrisState<boolean>,

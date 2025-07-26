@@ -18,7 +18,13 @@ local MorphEffects = require(inst_root.TprrMorphLib.MorphEffects)
 type MorphEffectsController = MorphEffects.MorphEffectsController
 
 
-local LinkedComponent = require(inst_rig_actions.LinkedComponent)
+local LinkedComponent = setmetatable(
+    {
+        Parse = require(inst_rig_actions.LinkedComponent.Parse),
+        Update = require(inst_rig_actions.LinkedComponent.Update)
+    },
+    {__index = require(inst_rig_actions.LinkedComponent)}
+)
 
 local T = require(inst_root["Ui.types"])
 type RigState = T.RigState
@@ -35,15 +41,7 @@ local m = {}
 function m.AnimatorMode(state: RigState): RigUiEditingState?
     assert(state.UiState._t == "RigAnimating")
 
-    local morphedRig = (function()
-        local morphedRig = MorphedRig.Parse.ParseMorphedRig(
-            state.UiState.AnimationRigRootModel
-        ):Ok()
-        if not morphedRig then return nil end
-        if not game:IsAncestorOf(morphedRig.Rig.Root.Model) then return nil end
-        return morphedRig
-    end)()
-
+    local morphedRig = state.LastMorphedRig
 
     local transition: RigUiEditingState? = nil
 
@@ -189,10 +187,15 @@ function _morphedRigOptions(state: RigState, morphedRig: MorphedRig)
             isPlaying:set(false)
             chosenAnim:set("No Selection")
         end
-        MorphedRig.StepAnimation(morphedRig, dt)
+        morphedRig.Animator:StepAnimations(dt)
+        if state.LastParsedRig then
+            LinkedComponent.Update.UpdateActiveRiggedModel(state.LastParsedRig)
+        end
     else
-        MorphedRig.StepAnimation(morphedRig, dt)
-        LinkedComponent.UpdateRigAttachments(morphedRig.Rig.Root.Model)
+        morphedRig.Animator:StepAnimations(dt)
+        if state.LastParsedRig then
+            LinkedComponent.Update.UpdateActiveRiggedModel(state.LastParsedRig)
+        end
     end
     if keyframeEventsAreActive:get() then
         state.UiState.MorphEffectsController.Update()

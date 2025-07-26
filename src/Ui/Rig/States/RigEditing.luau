@@ -15,7 +15,8 @@ local MorphedRig = require(inst_rig_actions.MorphedRig)
 
 local LinkedComponent = setmetatable(
     {
-        Parse = require(inst_rig_actions.LinkedComponent.Parse)
+        Parse = require(inst_rig_actions.LinkedComponent.Parse),
+        Update = require(inst_rig_actions.LinkedComponent.Update)
     },
     {__index = require(inst_rig_actions.LinkedComponent)}
 )
@@ -51,6 +52,12 @@ function m.RigMode(state: RigState): RigUiEditingState?
     local myOutput = state.UiState.Output
 
     local transition: RigUiEditingState? = nil
+
+    if not state.LastParsedRig then
+        state.LastParsedRig = LinkedComponent.Parse.ParseActiveRiggedModel(
+            state.UiState.RootModel, state.UiState.RootModel
+        )
+    end
 
     local rig: Rig? = (function()
         if not game:IsAncestorOf(state.UiState.RootModel) then
@@ -190,8 +197,8 @@ function _rigEditorLiveLinkedComponentUpdateToggle(state: RigState)
     if Iris.Checkbox(
         {"Deformation/Beam Preview"},
         {isChecked = state.LiveLinkedComponentUpdatesState}
-    ).isChecked:get() then
-        LinkedComponent.UpdateRigAttachments(state.UiState.RootModel)
+    ).isChecked:get() and state.LastParsedRig then
+        LinkedComponent.Update.UpdateActiveRiggedModel(state.LastParsedRig)
     end
 end
 
